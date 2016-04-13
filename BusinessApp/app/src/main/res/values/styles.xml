@@ -1,0 +1,33 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
+        <!-- Customize your theme here. -->
+     <!--   <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>  -->
+        <!--    <item name="android:actionBarStyle">@style/actionBarStyle</item> -->
+        <item name="actionBarStyle">@style/actionBarStyle</item>
+    </style>
+
+    <!-- ActionBar styles -->
+    <style name="actionBarStyle"
+           parent="@android:style/Widget.Holo.Light.ActionBar" >
+        <!--     <item name="android:displayOptions">showHome|useLogo|showTitle</item>-->
+
+        <!--     <item name="android:background">@color/actionbar_background</item>-->
+        <!--     <item name="android:titleTextStyle">@style/actionBarTitleText</item>-->
+
+        <!-- Support library compatibility -->
+        <item name="displayOptions">showHome|useLogo|showTitle</item>
+      <item name="background">@color/actionbar_background</item>
+      <item name="titleTextStyle">@style/actionBarTitleText</item>
+ </style>
+
+ <!-- ActionBar title text -->
+    <style name="actionBarTitleText"
+           parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/white_background</item>
+    </style>
+
+</resources>

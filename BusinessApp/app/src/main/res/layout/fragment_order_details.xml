@@ -1,0 +1,117 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:fillViewport="true"
+             tools:context="com.foodymon.businessapp.main.activity.OrderDetailsFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+    <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:id="@+id/order_detail_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/text_padding_side"
+        android:paddingRight="@dimen/text_padding_side"
+        android:paddingTop="@dimen/text_padding_top"
+        android:paddingBottom="@dimen/text_padding_top"
+        android:text="Order from Table 3"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/text_padding_side"
+        android:paddingRight="@dimen/text_padding_side"
+        android:paddingTop="@dimen/text_padding_top"
+        android:paddingBottom="@dimen/text_padding_top"
+        android:text="status: pendding"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider_grey"
+        android:layout_marginLeft="@dimen/text_padding_side"
+        android:layout_marginRight="@dimen/text_padding_side"
+        android:paddingTop="@dimen/divider_padding"
+        android:paddingBottom="@dimen/divider_padding"
+        android:orientation="horizontal"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/text_padding_side"
+        android:paddingRight="@dimen/text_padding_side"
+        android:paddingTop="@dimen/text_padding_top"
+        android:paddingBottom="@dimen/text_padding_top"
+        android:text="User: Alex@"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/text_padding_side"
+        android:paddingRight="@dimen/text_padding_side"
+        android:paddingTop="@dimen/text_padding_top"
+        android:paddingBottom="@dimen/text_padding_top"
+        android:text="Order Time: 6:15pm"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/text_padding_side"
+        android:paddingRight="@dimen/text_padding_side"
+        android:paddingTop="@dimen/text_padding_top"
+        android:paddingBottom="@dimen/text_padding_top"
+        android:text="People: 5"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/text_padding_side"
+            android:paddingRight="@dimen/text_padding_side"
+            android:paddingTop="@dimen/text_padding_top"
+            android:paddingBottom="@dimen/text_padding_top"
+            android:text="Additional Reqest: Can not eat spicy."/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider_grey"
+            android:layout_marginLeft="@dimen/text_padding_side"
+            android:layout_marginRight="@dimen/text_padding_side"
+            android:paddingTop="@dimen/divider_padding"
+            android:paddingBottom="@dimen/divider_padding"
+            android:orientation="horizontal"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/text_padding_side"
+        android:paddingRight="@dimen/text_padding_side"
+        android:paddingTop="@dimen/text_padding_top"
+        android:paddingBottom="@dimen/text_padding_top"
+        android:text="Order items:"/>
+
+        <LinearLayout
+            android:id="@+id/order_items"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"/>
+        <Button
+            android:id="@+id/confirm_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/button_grey"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:text="Confirm Order"
+            android:textAllCaps="false"
+            android:textSize="12dp"/>
+
+
+</LinearLayout>
+</ScrollView>
