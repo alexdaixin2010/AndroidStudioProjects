@@ -2,21 +2,23 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:background="@color/light_grey" >
+              android:background="@color/light_grey_05" >
 
     <RelativeLayout
         android:id="@+id/nav_order"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
         android:gravity="center">
 
         <ImageView
             android:id="@+id/nav_iv_order"
             android:layout_centerHorizontal="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/waiter"/>
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/order_icon"/>
 
         <TextView
             android:id="@+id/nav_tv_order"
@@ -24,10 +26,20 @@
             android:layout_below="@id/nav_iv_order"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
+            android:layout_marginTop="1dp"
             android:text="Order"
-            android:textColor="@color/button_grey"
-            android:textStyle="bold"/>
+            android:textColor="@color/button_grey" />
+        <TextView
+            android:id="@+id/order_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/nav_iv_order"
+            android:layout_alignRight="@id/nav_iv_order"
+            android:text="10"
+            android:textColor="#FFF"
+            android:textSize="8dp"
+            android:textStyle="bold"
+            android:background="@drawable/badge_circle"/>
 
     </RelativeLayout>
 
@@ -36,88 +48,93 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
         android:gravity="center">
 
         <ImageView
-            android:id="@+id/nav_iv_page"
+            android:id="@+id/nav_iv_pay"
             android:layout_centerHorizontal="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/bill"/>
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/payment_icon"/>
 
         <TextView
             android:id="@+id/nav_tv_pay"
             android:layout_centerHorizontal="true"
-            android:layout_below="@id/nav_iv_page"
+            android:layout_below="@id/nav_iv_pay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
-            android:text="Pay"
-            android:textColor="@color/button_grey"
-            android:textStyle="bold"/>
+            android:layout_marginTop="1dp"
+            android:text="Payment"
+            android:textColor="@color/button_grey" />
         <TextView
-            android:id="@+id/textOne"
+            android:id="@+id/pay_badge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@id/nav_iv_page"
-            android:layout_alignRight="@id/nav_iv_page"
+            android:layout_alignTop="@id/nav_iv_pay"
+            android:layout_alignRight="@id/nav_iv_pay"
             android:text="10"
             android:textColor="#FFF"
-            android:textSize="8sp"
+            android:textSize="8dp"
             android:textStyle="bold"
             android:background="@drawable/badge_circle"/>
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/nav_takeout"
+        android:id="@+id/nav_customer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
         android:gravity="center">
 
         <ImageView
-            android:id="@+id/nav_iv_takeout"
+            android:id="@+id/nav_iv_customer"
             android:layout_centerHorizontal="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/take_out"/>
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/customer_icon"/>
 
         <TextView
             android:id="@+id/nav_tv_takeout"
             android:layout_centerHorizontal="true"
-            android:layout_below="@id/nav_iv_takeout"
+            android:layout_below="@id/nav_iv_customer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
-            android:text="Take Out"
-            android:textColor="@color/button_grey"
-            android:textStyle="bold"/>
+            android:layout_marginTop="1dp"
+            android:text="Customer"
+            android:textSize= "15dp"
+            android:textColor="@color/button_grey" />
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/nav_user"
+        android:id="@+id/nav_dashboard"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
         android:gravity="center">
 
         <ImageView
-            android:id="@+id/nav_iv_user"
+            android:id="@+id/nav_iv_dashboard"
             android:layout_centerHorizontal="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/user"/>
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/desktop_icon"/>
 
         <TextView
-            android:id="@+id/nav_tv_user"
+            android:id="@+id/nav_tv_dashboard"
             android:layout_centerHorizontal="true"
-            android:layout_below="@id/nav_iv_user"
+            android:layout_below="@id/nav_iv_dashboard"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
-            android:text="User"
-            android:textColor="@color/button_grey"
-            android:textStyle="bold"/>
+            android:layout_marginTop="1dp"
+            android:text="DashBoard"
+            android:textSize= "15dp"
+            android:textColor="@color/button_grey" />
     </RelativeLayout>
 
 

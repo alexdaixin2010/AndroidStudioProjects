@@ -17,15 +17,21 @@ import com.google.gson.Gson;
  * Created by alexdai
  */
 public class HttpUtils {
-    private final static String BASE_URL = "http://52.73.213.106/";
+    private final static String BASE_URL = "http://52.73.213.106";
 
 
-    public static <T> T get(String entryPoint, String param, Class<T> clazz) {
+    public static <T> T get(String entryPoint, String[] params, String[] properties, Class<T> clazz) {
         HttpURLConnection urlConnection = null;
         InputStream in = null;
         try {
-            URL url = new URL(getAbsoluteUrl(entryPoint, ""));
+            String paramString = buildParams(params);
+            URL url = new URL(getAbsoluteUrl(entryPoint, "?"+paramString));
             urlConnection = (HttpURLConnection) url.openConnection();
+
+            urlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+
+            /* optional request header */
+            urlConnection.setRequestProperty("Accept", "application/json");
 
             urlConnection.setRequestMethod("GET");
             int statusCode = urlConnection.getResponseCode();
@@ -58,11 +64,15 @@ public class HttpUtils {
         return null;
     }
 
-    public static <T> T post(String entryPoint, String params,HashMap<String, String> property,  Class<T> clazz) {
+    public static <T> T post(String entryPoint, String[] params, String[] properties,  Class<T> clazz) {
         HttpURLConnection urlConnection = null;
         InputStream in = null;
         try {
-            URL url = new URL(getAbsoluteUrl(entryPoint, params));
+            String paramString = "";
+            if(!Utils.isNullOrEmpty(params)) {
+                paramString = "?" + buildParams(params);
+            }
+            URL url = new URL(getAbsoluteUrl(entryPoint, paramString));
             urlConnection = (HttpURLConnection) url.openConnection();
             /* optional request header */
             urlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
@@ -71,7 +81,12 @@ public class HttpUtils {
             urlConnection.setRequestProperty("Accept", "application/json");
 
             urlConnection.setRequestMethod("POST");
-            urlConnection.setRequestProperty("Authorization", property.get("Authorization"));
+
+            if(!Utils.isNullOrEmpty(properties)) {
+                for(int i = 0 ; i < properties.length; i +=2) {
+                    urlConnection.setRequestProperty(properties[i], properties[i+1]);
+                }
+            }
 
             urlConnection.setDoOutput(true);
             urlConnection.setChunkedStreamingMode(0);
@@ -85,13 +100,13 @@ public class HttpUtils {
             if (statusCode == 200) {
                 InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
                 Reader reader = new InputStreamReader(inputStream);
-                if(clazz != null) {
+                if(clazz == Boolean.class) {
+                    return (T)Boolean.TRUE;
+                } else if(clazz != null) {
                     Gson gson = new Gson();
                     T output = gson.fromJson(reader, clazz);
                     return output;
                 }
-            } else{
-
             }
             return null;
 
@@ -131,5 +146,18 @@ public class HttpUtils {
 
     private static String getAbsoluteUrl(String relativeUrl, String params) {
         return BASE_URL + relativeUrl + params;
+    }
+
+    private static String buildParams(String[] params) {
+        if(Utils.isNullOrEmpty(params)) {
+            return "";
+        }
+        StringBuilder builder = new StringBuilder();
+        String prefix = "";
+        for(int i = 0 ; i < params.length; i +=2) {
+            builder.append(prefix + params[i] + "=" + params[i+1]);
+            prefix = "&";
+        }
+        return builder.toString();
     }
 }

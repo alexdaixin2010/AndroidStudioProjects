@@ -1,0 +1,35 @@
+{
+  "project_info": {
+    "project_number": "1003628376366",
+    "project_id": "foodymon-1298"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1003628376366:android:95090490af830032",
+        "android_client_info": {
+          "package_name": "com.foodymon.businessapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOnxn6ZFv-bJu8V3xccNL7PtvGhLvMjwY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

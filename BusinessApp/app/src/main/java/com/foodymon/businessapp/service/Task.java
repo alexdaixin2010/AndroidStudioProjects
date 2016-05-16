@@ -8,7 +8,7 @@ import java.util.concurrent.Callable;
 /**
  * Created by alexdai on 4/8/16.
  */
-public interface Task<V, T> {
+public interface Task<T, V> {
 
     // UI thread
     void onPreExecute();

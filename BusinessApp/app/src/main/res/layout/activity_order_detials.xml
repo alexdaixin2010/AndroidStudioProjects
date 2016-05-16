@@ -1,17 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.foodymon.businessapp.main.activity.OrderDetailsActivity">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="com.foodymon.businessapp.main.activity.OrderDetailsActivity">
 
-    <fragment
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id ="@+id/details_fragment"
-        android:name="com.foodymon.businessapp.main.activity.OrderDetailsFragment"
-        tools:layout="@layout/fragment_order_details"/>
+        android:orientation="vertical"
+        tools:context="com.foodymon.businessapp.main.activity.OrderDetailsActivity">
 
-</LinearLayout>
+        <fragment
+            android:id="@+id/details_fragment"
+            android:name="com.foodymon.businessapp.main.activity.OrderDetailsFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:layout="@layout/fragment_order_details"/>
+
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/order_details_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:indeterminate="true"
+        android:visibility="invisible"/>
+</FrameLayout>

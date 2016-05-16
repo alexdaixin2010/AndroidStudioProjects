@@ -11,6 +11,7 @@ import com.foodymon.businessapp.R;
 import com.foodymon.businessapp.datastructure.StoreStaff;
 import com.foodymon.businessapp.main.BusinessApplication;
 import com.foodymon.businessapp.service.LoginService;
+import com.foodymon.businessapp.service.UICallBack;
 import com.foodymon.businessapp.utils.Utils;
 
 public class LogoActivity extends Activity {
@@ -50,7 +51,7 @@ public class LogoActivity extends Activity {
             String password = sharedPreferences.getString(PASSWROD, "");
             if (!TextUtils.isEmpty(userName) && !TextUtils.isEmpty(storeId)
                 && !TextUtils.isEmpty(password)) {
-                    mLoginService.authenticate(userName, storeId, password, new LoginService.LoginCallBack() {
+                    mLoginService.authenticate(userName, storeId, password, new UICallBack<StoreStaff>() {
                         @Override
                         public void onPreExecute() {
                             // Do nothing.

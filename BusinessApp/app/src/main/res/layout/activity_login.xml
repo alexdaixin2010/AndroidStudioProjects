@@ -45,7 +45,8 @@
                 android:background="@android:color/transparent"
                 android:ems="10"
                 android:hint="User Name"
-                android:inputType="text"
+                android:inputType="textNoSuggestions"
+                android:imeOptions="flagNoExtractUi"
                 android:paddingBottom="10dp"
                 android:paddingTop="10dp"/>
 
@@ -60,9 +61,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
+                android:imeOptions="flagNoExtractUi"
                 android:ems="10"
                 android:hint="Store Id"
-                android:inputType="text"
+                android:inputType="textNoSuggestions"
                 android:paddingBottom="10dp"
                 android:paddingTop="10dp"/>
 
@@ -78,6 +80,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:background="@android:color/transparent"
+                android:imeOptions="flagNoExtractUi"
                 android:ems="10"
                 android:hint="PassWord"
                 android:inputType="textPassword"

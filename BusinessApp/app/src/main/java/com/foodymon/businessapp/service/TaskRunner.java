@@ -7,8 +7,8 @@ import java.util.concurrent.Callable;
 /**
  * Created by alexdai on 4/8/16.
  */
-public class TaskRunner<V, T> {
-    private Task<V, T> mTask;
+public class TaskRunner<T, V> {
+    private Task<T, V> mTask;
 
     public TaskRunner(Task task) {
         mTask = task;

@@ -1,9 +1,7 @@
 package com.foodymon.businessapp.main;
 
 import android.app.Application;
-import android.os.RemoteException;
 
-import com.foodymon.businessapp.service.ILoginService;
 import com.foodymon.businessapp.service.LoginService;
 
 /**
@@ -11,6 +9,7 @@ import com.foodymon.businessapp.service.LoginService;
  */
 public class BusinessApplication extends Application {
     private String mUserId;
+    private String storeId;
     private LoginService mLoginService;
 
     @Override
@@ -19,6 +18,14 @@ public class BusinessApplication extends Application {
         //Init
         mLoginService = new LoginService();
 
+    }
+
+    public String getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(String storeId) {
+        this.storeId = storeId;
     }
 
     public LoginService getLoginService() {

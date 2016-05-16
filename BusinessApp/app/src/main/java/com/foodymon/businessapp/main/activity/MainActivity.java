@@ -4,34 +4,54 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.RelativeLayout;
+import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.foodymon.businessapp.R;
+import com.foodymon.businessapp.constant.Constant;
+import com.foodymon.businessapp.main.BusinessApplication;
+import com.foodymon.businessapp.service.TopicRegistrationService;
+import com.foodymon.businessapp.utils.Utils;
 
 public class MainActivity extends AppCompatActivity
-    implements NavigationView.OnNavigationItemSelectedListener {
+    implements NavigationView.OnNavigationItemSelectedListener, OrderFragment.OnFragmentInteractionListener {
 
-    private RelativeLayout nav_order;
-    private RelativeLayout nav_pay;
-    private RelativeLayout nav_takeout;
-    private RelativeLayout nav_user;
+    private ViewGroup nav_order;
+    private ViewGroup nav_pay;
+    private ViewGroup nav_customer;
+    private ViewGroup nav_dashboard;
+
+    private ViewGroup selectedTab;
 
     private TextView nav_tv_order;
     private TextView nav_tv_pay;
-    private TextView nav_tv_takeout;
-    private TextView nav_tv_user;
+    private TextView nav_tv_customer;
+    private TextView nav_tv_dashboard;
+
+    private TextView order_badge;
+
+    private ProgressBar loading;
 
     private OrderFragment orderFragment;
 
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
+
+    private BusinessApplication app;
+
+    private static int TAB_SELECTED = Color.argb(18, 0,0,0);
 
 
     @Override
@@ -41,29 +61,58 @@ public class MainActivity extends AppCompatActivity
         this.setTitle("Business View");
 
         initBottonNavBar();
-    }
 
+        getSupportFragmentManager().beginTransaction().commit();
+
+        app = (BusinessApplication)this.getApplication();
+
+        loading = (ProgressBar)findViewById(R.id.activity_main_loading);
+
+
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                // checking for type intent filter
+                if (intent.getAction().equals(Constant.ORDER_UPDATE)) {
+                    order_badge.setVisibility(View.VISIBLE);
+                }
+            }
+        };
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // register new push message receiver
+        // by doing this, the activity will be notified each time a new message arrives
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+            new IntentFilter(Constant.ORDER_UPDATE));
+    }
     private void initBottonNavBar() {
         BottomNavListener navListener = new BottomNavListener();
-        nav_order = (RelativeLayout)findViewById(R.id.nav_order);
-        nav_pay = (RelativeLayout) findViewById(R.id.nav_pay);
-        nav_takeout = (RelativeLayout) findViewById(R.id.nav_takeout);
-        nav_user = (RelativeLayout) findViewById(R.id.nav_user);
+        nav_order = (ViewGroup)findViewById(R.id.nav_order);
+
+        order_badge = (TextView)findViewById(R.id.order_badge);
+
+        nav_pay = (ViewGroup) findViewById(R.id.nav_pay);
+        nav_customer = (ViewGroup) findViewById(R.id.nav_customer);
+        nav_dashboard = (ViewGroup) findViewById(R.id.nav_dashboard);
         nav_order.setOnClickListener(navListener);
         nav_pay.setOnClickListener(navListener);
-        nav_takeout.setOnClickListener(navListener);
-        nav_user.setOnClickListener(navListener);
+        nav_customer.setOnClickListener(navListener);
+        nav_dashboard.setOnClickListener(navListener);
 
         nav_tv_order = (TextView) findViewById(R.id.nav_tv_order);
         nav_tv_pay = (TextView) findViewById(R.id.nav_tv_pay);
-        nav_tv_takeout = (TextView) findViewById(R.id.nav_tv_takeout);
-        nav_tv_user = (TextView) findViewById(R.id.nav_tv_user);
+        nav_tv_customer = (TextView) findViewById(R.id.nav_tv_customer);
+        nav_tv_dashboard = (TextView) findViewById(R.id.nav_tv_dashboard);
 
         //setbadge
-        //nav_takeout.setBackground(getResources().getDrawable(R.drawable.badge_circle));
+        //nav_customer.setBackground(getResources().getDrawable(R.drawable.badge_circle));
 
         // set default order fragment
-        nav_tv_order.setTextColor(0xff1B940A);
+        nav_order.setBackgroundColor(TAB_SELECTED);
+        selectedTab = nav_order;
         if(orderFragment == null) {
             orderFragment = OrderFragment.newInstance();
         }
@@ -77,8 +126,8 @@ public class MainActivity extends AppCompatActivity
     private void restartBottonNavTextColor() {
         nav_tv_order.setTextColor(getResources().getColor(R.color.button_grey));
         nav_tv_pay.setTextColor(getResources().getColor(R.color.button_grey));
-        nav_tv_takeout.setTextColor(getResources().getColor(R.color.button_grey));
-        nav_tv_user.setTextColor(getResources().getColor(R.color.button_grey));
+        nav_tv_customer.setTextColor(getResources().getColor(R.color.button_grey));
+        nav_tv_dashboard.setTextColor(getResources().getColor(R.color.button_grey));
 
     }
 
@@ -108,10 +157,54 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK
                 | Intent.FLAG_ACTIVITY_NEW_TASK);
+
+            Intent unSuscribe = new Intent(MainActivity.this, TopicRegistrationService.class);
+            unSuscribe.putExtra(Constant.KEY, Constant.UNSUBSCRIBE);
+            unSuscribe.putExtra(Constant.TOPIC, app.getStoreId()+"-order");
+            startService(unSuscribe);
+
             startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onFragmentInteraction(Intent intent) {
+        String from = intent.getStringExtra(Constant.INTENT_FROM);
+        String action = intent.getStringExtra(Constant.INTENT_ACTION);
+        switch (from) {
+            case Constant.ORDER_FRAGMENT:
+                if(action.equals(Constant.ORDER_REFRESH_DONE)) {
+                    this.order_badge.setVisibility(View.INVISIBLE);
+                }
+                break;
+            default:
+        }
+
+        switch (action) {
+            case Constant.SHOW_LOADING:
+                loading.setVisibility(View.VISIBLE);
+                break;
+            case Constant.HIDE_LOADING:
+                loading.setVisibility(View.INVISIBLE);
+            default:
+        }
+
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == Constant.ORDER_DETAIL_REQUEST) {
+            if(resultCode == Activity.RESULT_OK){
+                if ("refresh".equals(data.getStringExtra("result"))){
+                    orderFragment.refreshOrderList();
+                }
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                //Write your code if there's no result
+            }
+        }
     }
 
     class BottomNavListener implements View.OnClickListener {
@@ -126,7 +219,9 @@ public class MainActivity extends AppCompatActivity
             switch (v.getId()) {
                 case R.id.nav_order:
                     //    nav_iv_order.setImageResource(R.drawable.nav_order_pressed);
-                    nav_tv_order.setTextColor(0xff1B940A);
+                    selectedTab.setBackground(null);
+                    nav_order.setBackgroundColor(TAB_SELECTED);
+                    selectedTab = nav_order;
                     if(orderFragment == null) {
                         orderFragment = OrderFragment.newInstance();
                     }
@@ -134,17 +229,23 @@ public class MainActivity extends AppCompatActivity
                     break;
                 case R.id.nav_pay:
                     //    nav_iv_order.setImageResource(R.drawable.nav_pay_pressed);
-                    nav_tv_pay.setTextColor(0xff1B940A);
+                    selectedTab.setBackground(null);
+                    nav_pay.setBackgroundColor(TAB_SELECTED);
+                    nav_order = nav_pay;
                     transaction.remove(orderFragment);
                     break;
-                case R.id.nav_takeout:
+                case R.id.nav_customer:
                     //    nav_iv_order.setImageResource(R.drawable.nav_takeout_pressed);
-                    nav_tv_takeout.setTextColor(0xff1B940A);
+                    selectedTab.setBackground(null);
+                    nav_customer.setBackgroundColor(TAB_SELECTED);
+                    selectedTab = nav_customer;
                     transaction.remove(orderFragment);
                     break;
-                case R.id.nav_user:
+                case R.id.nav_dashboard:
                     //    nav_iv_order.setImageResource(R.drawable.nav_user_pressed);
-                    nav_tv_user.setTextColor(0xff1B940A);
+                    selectedTab.setBackground(null);
+                    nav_dashboard.setBackgroundColor(TAB_SELECTED);
+                    selectedTab = nav_dashboard;
                     transaction.remove(orderFragment);
                     break;
             }

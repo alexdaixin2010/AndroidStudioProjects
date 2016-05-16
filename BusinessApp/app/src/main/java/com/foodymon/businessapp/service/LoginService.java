@@ -19,7 +19,7 @@ public class LoginService {
     }
 
     public void authenticate(String storeId, String userName, String password,
-                             final LoginCallBack callBack) {
+                             final UICallBack<StoreStaff> callBack) {
         String[] params = new String[]{storeId, userName, password};
         new TaskRunner<String, String>(new Task<String, String>() {
             @Override
@@ -43,20 +43,11 @@ public class LoginService {
 
     @Nullable
     private String tryLogin(String storeId, String userName, String password) {
-        HashMap<String, String> property = new HashMap<String, String>();
-
         String auth = userName + ":" + password;
         String auth64 = Base64.encodeToString(auth.getBytes(), Base64.DEFAULT);
-        property.put("Authorization", "Basic " + auth64);
-        String user = HttpUtils.post("userprofile/up/storestaff/login/basic/" + storeId, "", property, String.class);
+        String[] property = new String[] {"Authorization", "Basic " + auth64};
+        String user = HttpUtils.post("/storestaff/login/basic/" + storeId, null, property, String.class);
         return user != null ? user.toString(): null;
     }
 
-    public interface LoginCallBack {
-
-        void onPreExecute();
-
-        void onPostExecute(StoreStaff storeStaff);
-
-    }
 }
