@@ -8,7 +8,9 @@ import com.foodymon.businessapp.datastructure.LiteOrderList;
 import com.foodymon.businessapp.datastructure.Order;
 import com.foodymon.businessapp.datastructure.StoreStaff;
 import com.foodymon.businessapp.utils.HttpUtils;
+import com.google.gson.Gson;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 
 /**
@@ -71,8 +73,9 @@ public class OrderService {
         }).execute(params);
     }
 
-    public static void acceptOrder(final String orderId, final String subId, final UICallBack<Boolean> callBack) {
+    public static void acceptOrder(final String orderId, final String subId, final String userId, final Order order, final UICallBack<Boolean> callBack) {
 
+        String[] params = new String[]{"operator", userId};
         new TaskRunner<String, Boolean>(new Task<String, Boolean>() {
             @Override
             public void onPreExecute() {
@@ -82,7 +85,17 @@ public class OrderService {
             @Override
             @Nullable
             public Boolean doInBackground(String[] params) {
-                Boolean response = HttpUtils.post("/bp/" + orderId + "/accept/" + subId, null, null, Boolean.class);
+                byte[] body = new byte[0];
+
+                if(order != null) {
+                    try {
+                        Gson gson = new Gson();
+                        String json = gson.toJson(order);
+                        body = json.getBytes("UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                    }
+                }
+                Boolean response = HttpUtils.post("/bp/" + orderId + "/accept/" + subId, params,null, body, Boolean.class);
                 return response;
             }
 
@@ -91,11 +104,12 @@ public class OrderService {
                 callBack.onPostExecute(response);
 
             }
-        }).execute(null);
+        }).execute(params);
     }
 
-    public static void rejectOrder(final String orderId, final String subId, final UICallBack<Boolean> callBack) {
+    public static void rejectOrder(final String orderId, final String subId, final String userId, final UICallBack<Boolean> callBack) {
 
+        String[] params = new String[]{"operator", userId};
         new TaskRunner<String, Boolean>(new Task<String, Boolean>() {
             @Override
             public void onPreExecute() {
@@ -105,7 +119,7 @@ public class OrderService {
             @Override
             @Nullable
             public Boolean doInBackground(String[] params) {
-                Boolean response = HttpUtils.post("/bp/" + orderId + "/reject/"+subId, null, null, Boolean.class);
+                Boolean response = HttpUtils.post("/bp/" + orderId + "/reject/"+subId, params, null, new byte[0], Boolean.class);
                 return response;
             }
 
@@ -114,7 +128,7 @@ public class OrderService {
                 callBack.onPostExecute(response);
 
             }
-        }).execute(null);
+        }).execute(params);
     }
 
 }

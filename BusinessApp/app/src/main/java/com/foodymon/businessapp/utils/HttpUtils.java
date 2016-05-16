@@ -64,7 +64,7 @@ public class HttpUtils {
         return null;
     }
 
-    public static <T> T post(String entryPoint, String[] params, String[] properties,  Class<T> clazz) {
+    public static <T> T post(String entryPoint, String[] params, String[] properties, byte[] body, Class<T> clazz) {
         HttpURLConnection urlConnection = null;
         InputStream in = null;
         try {
@@ -87,11 +87,13 @@ public class HttpUtils {
                     urlConnection.setRequestProperty(properties[i], properties[i+1]);
                 }
             }
+            urlConnection.setRequestProperty( "Content-Length", Integer.toString(body.length));
 
             urlConnection.setDoOutput(true);
             urlConnection.setChunkedStreamingMode(0);
 
             DataOutputStream out = new DataOutputStream(urlConnection.getOutputStream());
+            out.write(body);
 
             out.flush();
             out.close();

@@ -33,6 +33,7 @@
             android:id="@+id/order_badge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="invisible"
             android:layout_alignTop="@id/nav_iv_order"
             android:layout_alignRight="@id/nav_iv_order"
             android:text="10"
@@ -72,6 +73,7 @@
             android:id="@+id/pay_badge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="invisible"
             android:layout_alignTop="@id/nav_iv_pay"
             android:layout_alignRight="@id/nav_iv_pay"
             android:text="10"
@@ -98,7 +100,7 @@
             android:src="@drawable/customer_icon"/>
 
         <TextView
-            android:id="@+id/nav_tv_takeout"
+            android:id="@+id/nav_tv_customer"
             android:layout_centerHorizontal="true"
             android:layout_below="@id/nav_iv_customer"
             android:layout_width="wrap_content"

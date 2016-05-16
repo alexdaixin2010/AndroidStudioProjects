@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity
         nav_pay = (ViewGroup) findViewById(R.id.nav_pay);
         nav_customer = (ViewGroup) findViewById(R.id.nav_customer);
         nav_dashboard = (ViewGroup) findViewById(R.id.nav_dashboard);
+
         nav_order.setOnClickListener(navListener);
         nav_pay.setOnClickListener(navListener);
         nav_customer.setOnClickListener(navListener);
@@ -231,7 +232,7 @@ public class MainActivity extends AppCompatActivity
                     //    nav_iv_order.setImageResource(R.drawable.nav_pay_pressed);
                     selectedTab.setBackground(null);
                     nav_pay.setBackgroundColor(TAB_SELECTED);
-                    nav_order = nav_pay;
+                    selectedTab = nav_pay;
                     transaction.remove(orderFragment);
                     break;
                 case R.id.nav_customer:

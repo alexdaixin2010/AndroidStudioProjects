@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
               android:paddingTop="@dimen/order_detail_item_margin"
               android:paddingLeft="@dimen/order_detail_item_margin"
               android:paddingBottom="@dimen/order_detail_item_margin"
-        android:orientation="vertical">
+              android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,21 +14,21 @@
         android:orientation="horizontal">
 
         <ImageButton
-            android:id="@+id/order_detail_remove_attribute_value_button"
+            android:id="@+id/order_detail_remove_attribute_button"
             android:layout_width="@dimen/order_detaill_item_remove_button_size"
             android:layout_height="match_parent"
             android:layout_marginRight="10dp"
             android:src="@drawable/close"/>
 
         <TextView
-            android:id="@+id/order_detail_item_attribute_value"
+            android:id="@+id/order_detail_item_attribute_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Green Salad"
             android:textColor="@color/black_99"
             android:textSize="@dimen/order_detaill_item_title_font"/>
-            </LinearLayout>
-        <LinearLayout
+    </LinearLayout>
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/divider_grey"

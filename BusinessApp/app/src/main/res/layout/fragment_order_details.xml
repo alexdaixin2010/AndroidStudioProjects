@@ -246,6 +246,24 @@
                         android:layout_marginTop="20dp"
                         android:gravity="center">
 
+                        <com.foodymon.businessapp.main.view.CircleImageView
+                    android:id="@+id/accept_button"
+                    android:layout_width="90dp"
+                    android:layout_height="90dp"
+                    android:layout_marginRight="180dp"
+                    app:civ_border_width="2dp"
+                    app:civ_border_color="@color/button_grey"
+                    android:src="@drawable/accept"/>
+
+                        <com.foodymon.businessapp.main.view.CircleImageView
+                        android:id="@+id/reject_button"
+                        android:layout_width="90dp"
+                        android:layout_height="90dp"
+                        android:layout_marginLeft="180dp"
+                        app:civ_border_width="2dp"
+                        app:civ_border_color="@color/button_grey"
+                        android:src="@drawable/deny"/>
+<!--
                         <Button
                             android:id="@+id/accept_button"
                             android:layout_width="wrap_content"
@@ -269,8 +287,9 @@
                             android:text="Reject Order"
                             android:textAllCaps="false"
                             android:textSize="12dp"/>
-                    </RelativeLayout>
 
+                            -->
+                    </RelativeLayout>
 
                 </LinearLayout>
             </android.support.v7.widget.CardView>

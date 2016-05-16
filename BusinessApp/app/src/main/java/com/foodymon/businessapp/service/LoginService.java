@@ -46,7 +46,7 @@ public class LoginService {
         String auth = userName + ":" + password;
         String auth64 = Base64.encodeToString(auth.getBytes(), Base64.DEFAULT);
         String[] property = new String[] {"Authorization", "Basic " + auth64};
-        String user = HttpUtils.post("/storestaff/login/basic/" + storeId, null, property, String.class);
+        String user = HttpUtils.post("/storestaff/login/basic/" + storeId, null, property, new byte[0], String.class);
         return user != null ? user.toString(): null;
     }
 

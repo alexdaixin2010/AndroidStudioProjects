@@ -4,40 +4,31 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.provider.ContactsContract;
-import android.support.v7.widget.GridLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.foodymon.businessapp.R;
-import com.foodymon.businessapp.constant.Constant;
-import com.foodymon.businessapp.datastructure.LiteOrderList;
 import com.foodymon.businessapp.datastructure.Order;
 import com.foodymon.businessapp.datastructure.OrderItem;
 import com.foodymon.businessapp.datastructure.OrderItemAttribute;
+import com.foodymon.businessapp.main.BusinessApplication;
+import com.foodymon.businessapp.main.view.CircleImageView;
 import com.foodymon.businessapp.service.OrderService;
 import com.foodymon.businessapp.service.UICallBack;
 import com.foodymon.businessapp.utils.Utils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
 public class OrderDetailsFragment extends Fragment {
     private Order order;
-    TextView orderId;
-    TextView table;
-    TextView time;
-    TextView status;
-
+    private boolean isOrderChange =false;
+    private BusinessApplication app;
 
     public static OrderDetailsFragment newInstance() {
         return new OrderDetailsFragment();
@@ -56,11 +47,12 @@ public class OrderDetailsFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         order = getActivity().getIntent().getParcelableExtra(Order.BUNDLE_NAME);
+        app = (BusinessApplication)getActivity().getApplication();
 
-        orderId = (TextView)getView().findViewById(R.id.order_detail_id);
-        table = (TextView)getView().findViewById(R.id.order_detail_table);
-        time = (TextView)getView().findViewById(R.id.order_detail_time);
-        status = (TextView)getView().findViewById(R.id.order_detail_status);
+        TextView orderId = (TextView)getView().findViewById(R.id.order_detail_id);
+        TextView table = (TextView)getView().findViewById(R.id.order_detail_table);
+        TextView time = (TextView)getView().findViewById(R.id.order_detail_time);
+        TextView status = (TextView)getView().findViewById(R.id.order_detail_status);
 
         orderId.setText(order.getLiteOrder().getOrderId()+"/"+ order.getLiteOrder().getSub_id());
         table.setText(order.getLiteOrder().getTable());
@@ -73,8 +65,9 @@ public class OrderDetailsFragment extends Fragment {
 
         for ( OrderItem item: order.getItems()) {
             final View itemCard = getActivity().getLayoutInflater().inflate(R.layout.order_item_card, null);
+            final OrderItem orderItem = item;
 
-            GridLayout itemView= (GridLayout) itemCard.findViewById(R.id.order_detail_item);
+            final LinearLayout itemView= (LinearLayout) itemCard.findViewById(R.id.order_detail_item);
 
             TextView itemName = (TextView)itemCard.findViewById(R.id.order_detail_item_name);
             itemName.setText(item.getItemName());
@@ -82,26 +75,57 @@ public class OrderDetailsFragment extends Fragment {
             TextView itemPrice = (TextView)itemCard.findViewById(R.id.order_detail_item_price);
             itemPrice.setText("$ "+String.valueOf(item.getPrice()));
 
-            ImageButton removeBtn = (ImageButton)itemCard.findViewById(R.id.order_detail_remove_item_button);
-            removeBtn.setOnClickListener(new View.OnClickListener() {
+            ImageButton itemRemoveBtn = (ImageButton)itemCard.findViewById(R.id.order_detail_remove_item_button);
+            itemRemoveBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     linearLayout.removeView(itemCard);
+                    order.getItems().remove(orderItem);
+                    isOrderChange = true;
                 }
             });
-
 
             //TODO: set quantity
 
             if(!Utils.isNullOrEmpty(item.getAttributes())) {
-                for (OrderItemAttribute attribute : item.getAttributes()) {
-                    View attributeView = getActivity().getLayoutInflater().inflate(R.layout.order_item_attribute, null);
+                final List<OrderItemAttribute> attribueList = item.getAttributes();
+                for (int i = 0 ; i < attribueList.size(); ++i) {
+                    final OrderItemAttribute itemAttribute = attribueList.get(i);
+                    final LinearLayout attributeView = (LinearLayout)getActivity().getLayoutInflater().inflate(R.layout.order_item_attribute_name, null);
                     TextView attributeName = (TextView) attributeView.findViewById(R.id.order_detail_item_attribute_name);
-                    attributeName.setText(attribute.getName());
+                    attributeName.setText(itemAttribute.getName());
 
-                    TextView attributeValue = (TextView) attributeView.findViewById(R.id.order_detail_item_attribute_value);
-                    attributeValue.setText(Utils.StringJoin(",", attribute.getValues().toArray(new String[0])));
+                    ImageButton attrRemoveBtn = (ImageButton)attributeView.findViewById(R.id.order_detail_remove_attribute_button);
+                    attrRemoveBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            itemView.removeView(attributeView);
+                            attribueList.remove(itemAttribute);
+                            isOrderChange = true;
 
+                        }
+                    });
+
+                    final List<String> values = itemAttribute.getValues();
+                    for(int j = 0; j < values.size(); ++j) {
+                        final int index = j;
+                        String value = values.get(j);
+                        final LinearLayout valueView = (LinearLayout)getActivity().getLayoutInflater().inflate(R.layout.order_item_attribute, null);
+                        TextView valueTextView = (TextView) valueView.findViewById(R.id.order_detail_item_attribute_value);
+                        valueTextView.setText(value);
+                        attributeView.addView(valueView);
+
+                        ImageButton attrValueRemoveBtn = (ImageButton)valueView.findViewById(R.id.order_detail_remove_attribute_value_button);
+                        attrValueRemoveBtn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                attributeView.removeView(valueView);
+                                values.remove(index);
+                                itemAttribute.getValueCodes().remove(index);
+                                isOrderChange = true;
+                            }
+                        });
+                    }
                     itemView.addView(attributeView);
 
                 }
@@ -118,7 +142,7 @@ public class OrderDetailsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_order_details, container, false);
 
-        Button confirmBtn = (Button)view.findViewById(R.id.accept_button);
+        CircleImageView confirmBtn = (CircleImageView)view.findViewById(R.id.accept_button);
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -126,11 +150,11 @@ public class OrderDetailsFragment extends Fragment {
             }
         });
 
-        Button rejectBtn = (Button)view.findViewById(R.id.reject_button);
+        CircleImageView rejectBtn = (CircleImageView)view.findViewById(R.id.reject_button);
         rejectBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                rejectOrder(order.getLiteOrder().getOrderId(), order.getLiteOrder().getSub_id());
+               // rejectOrder(order.getLiteOrder().getOrderId(), order.getLiteOrder().getSub_id());
             }
         });
 
@@ -138,10 +162,9 @@ public class OrderDetailsFragment extends Fragment {
     }
 
     private void acceptOrder(String orderId, String subOrderId) {
-        OrderService.acceptOrder(orderId, subOrderId, new UICallBack<Boolean>() {
+        OrderService.acceptOrder(orderId, subOrderId, app.getUserId(), isOrderChange?order:null, new UICallBack<Boolean>() {
             @Override
             public void onPreExecute() {
-
             }
 
             @Override
@@ -159,7 +182,7 @@ public class OrderDetailsFragment extends Fragment {
     }
 
     private void rejectOrder(String orderId, String subOrderId) {
-        OrderService.rejectOrder(orderId, subOrderId, new UICallBack<Boolean>() {
+        OrderService.rejectOrder(orderId, subOrderId,app.getUserId(), new UICallBack<Boolean>() {
             @Override
             public void onPreExecute() {
 
