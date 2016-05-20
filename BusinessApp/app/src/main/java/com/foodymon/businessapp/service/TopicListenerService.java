@@ -2,13 +2,10 @@ package com.foodymon.businessapp.service;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.support.v4.content.LocalBroadcastManager;
 
-import com.foodymon.businessapp.constant.Constant;
-import com.foodymon.businessapp.main.activity.MainActivity;
-import com.foodymon.businessapp.utils.Utils;
+import com.foodymon.businessapp.constant.Constants;
 import com.google.android.gms.gcm.GcmListenerService;
 
 /**
@@ -31,7 +28,7 @@ public class TopicListenerService extends GcmListenerService {
 
 
         // app is in foreground, broadcast the push message
-        Intent pushNotification = new Intent(Constant.ORDER_UPDATE);
+        Intent pushNotification = new Intent(Constants.ORDER_UPDATE);
         pushNotification.putExtra("message", message);
         LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
 

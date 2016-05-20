@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="@color/light_grey_05" >
+
+    <LinearLayout
+        android:id="@+id/nav_order"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/nav_iv_order"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/order_icon"/>
+
+        <TextView
+            android:id="@+id/nav_tv_order"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="Orders"
+            android:textSize="15dp"
+            android:textColor="@color/button_grey"/>
+
+        <TextView
+            android:id="@+id/order_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:text="10"
+            android:textColor="#FFF"
+            android:textSize="10dp"
+            android:textStyle="bold"
+            android:visibility="visible"
+            android:background="@drawable/badge_circle"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/nav_pay"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/nav_iv_pay"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/payment_icon"/>
+
+        <TextView
+            android:id="@+id/nav_tv_pay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="Payments"
+            android:textSize="15dp"
+            android:textColor="@color/button_grey"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/nav_customer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/nav_iv_customer"
+            android:layout_centerHorizontal="true"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/customer_icon"/>
+
+        <TextView
+            android:id="@+id/nav_tv_customer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="Customers"
+            android:textSize="15dp"
+            android:textColor="@color/button_grey"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/nav_dashboard"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/nav_iv_dashboard"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/desktop_icon"/>
+
+        <TextView
+            android:id="@+id/nav_tv_dashboard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="DashBoard"
+            android:textSize= "15dp"
+            android:textColor="@color/button_grey"/>
+
+        <TextView
+            android:id="@+id/dashboard_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:text="10"
+            android:textColor="#FFF"
+            android:textSize="10dp"
+            android:textStyle="bold"
+            android:visibility="visible"
+            android:background="@drawable/badge_circle"/>
+    </LinearLayout>
+
+
+</LinearLayout>

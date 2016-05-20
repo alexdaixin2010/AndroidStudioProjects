@@ -1,7 +1,6 @@
 package com.foodymon.businessapp.main.activity;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
@@ -21,10 +20,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.foodymon.businessapp.R;
-import com.foodymon.businessapp.constant.Constant;
+import com.foodymon.businessapp.constant.Constants;
 import com.foodymon.businessapp.main.BusinessApplication;
+import com.foodymon.businessapp.service.LoginService;
 import com.foodymon.businessapp.service.TopicRegistrationService;
-import com.foodymon.businessapp.utils.Utils;
 
 public class MainActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener, OrderFragment.OnFragmentInteractionListener {
@@ -73,7 +72,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onReceive(Context context, Intent intent) {
                 // checking for type intent filter
-                if (intent.getAction().equals(Constant.ORDER_UPDATE)) {
+                if (intent.getAction().equals(Constants.ORDER_UPDATE)) {
                     order_badge.setVisibility(View.VISIBLE);
                 }
             }
@@ -86,7 +85,7 @@ public class MainActivity extends AppCompatActivity
         // register new push message receiver
         // by doing this, the activity will be notified each time a new message arrives
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
-            new IntentFilter(Constant.ORDER_UPDATE));
+            new IntentFilter(Constants.ORDER_UPDATE));
     }
     private void initBottonNavBar() {
         BottomNavListener navListener = new BottomNavListener();
@@ -159,9 +158,11 @@ public class MainActivity extends AppCompatActivity
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK
                 | Intent.FLAG_ACTIVITY_NEW_TASK);
 
+            LoginService.logout(this);
+
             Intent unSuscribe = new Intent(MainActivity.this, TopicRegistrationService.class);
-            unSuscribe.putExtra(Constant.KEY, Constant.UNSUBSCRIBE);
-            unSuscribe.putExtra(Constant.TOPIC, app.getStoreId()+"-order");
+            unSuscribe.putExtra(Constants.KEY, Constants.UNSUBSCRIBE);
+            unSuscribe.putExtra(Constants.TOPIC, app.getStoreId()+"-order");
             startService(unSuscribe);
 
             startActivity(intent);
@@ -172,11 +173,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onFragmentInteraction(Intent intent) {
-        String from = intent.getStringExtra(Constant.INTENT_FROM);
-        String action = intent.getStringExtra(Constant.INTENT_ACTION);
+        String from = intent.getStringExtra(Constants.INTENT_FROM);
+        String action = intent.getStringExtra(Constants.INTENT_ACTION);
         switch (from) {
-            case Constant.ORDER_FRAGMENT:
-                if(action.equals(Constant.ORDER_REFRESH_DONE)) {
+            case Constants.ORDER_FRAGMENT:
+                if(action.equals(Constants.ORDER_REFRESH_DONE)) {
                     this.order_badge.setVisibility(View.INVISIBLE);
                 }
                 break;
@@ -184,10 +185,10 @@ public class MainActivity extends AppCompatActivity
         }
 
         switch (action) {
-            case Constant.SHOW_LOADING:
+            case Constants.SHOW_LOADING:
                 loading.setVisibility(View.VISIBLE);
                 break;
-            case Constant.HIDE_LOADING:
+            case Constants.HIDE_LOADING:
                 loading.setVisibility(View.INVISIBLE);
             default:
         }
@@ -196,10 +197,10 @@ public class MainActivity extends AppCompatActivity
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (requestCode == Constant.ORDER_DETAIL_REQUEST) {
+        if (requestCode == Constants.ORDER_DETAIL_REQUEST) {
             if(resultCode == Activity.RESULT_OK){
                 if ("refresh".equals(data.getStringExtra("result"))){
-                    orderFragment.refreshOrderList();
+                    orderFragment.refreshOrderList(false);
                 }
             }
             if (resultCode == Activity.RESULT_CANCELED) {

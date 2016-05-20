@@ -10,29 +10,35 @@
 
     <dimen name="divider_padding">6dp</dimen>
 
+    <dimen name="section_padding">8dp</dimen>
+    <dimen name="button_side_padding">10dp</dimen>
+    <dimen name="button_top_padding">3dp</dimen>
+    <dimen name="button_margin">8dp</dimen>
+    <dimen name="button_text_font">8dp</dimen>
+
     <!-- card -->
     <dimen name="card_radius">4dp</dimen>
     <dimen name="card_elevation">4dp</dimen>
 
     <!-- order -->
     <dimen name="order_title_font">14dp</dimen>
-    <dimen name="order_subtitle_font">18dp</dimen>
-    <dimen name="order_subtitle_large_font">45dp</dimen>
-    <dimen name="order_card_width">340dp</dimen>
+    <dimen name="order_subtitle_font">16dp</dimen>
+    <dimen name="order_subtitle_large_font">38dp</dimen>
 
     <dimen name="order_card_top_padding">10dp</dimen>
-    <dimen name="order_card_side_padding">20dp</dimen>
+    <dimen name="order_card_side_padding">10dp</dimen>
+    <dimen name="order_card_status_section_height">100dp</dimen>
     <dimen name="order_card_section_padding">10dp</dimen>
-    <dimen name="order_card_section_item_padding">10dp</dimen>
+    <dimen name="order_card_section_item_padding">8dp</dimen>
     <dimen name="order_card_section_item_extra_padding">20dp</dimen>
-    <dimen name="order_card_user_img_size">80dp</dimen>
+    <dimen name="order_card_user_img_size">82dp</dimen>
 
     <!-- order detail-->
     <dimen name="order_detail_card_top_padding">5dp</dimen>
     <dimen name="order_detail_card_side_padding">5dp</dimen>
     <dimen name="order_detail_item_margin">10dp</dimen>
 
-    <dimen name="order_detaill_item_title_font">15dp</dimen>
+    <dimen name="order_detaill_item_title_font">18dp</dimen>
     <dimen name="order_detaill_item_categoryt_font">8dp</dimen>
     <dimen name="order_detaill_item_remove_button_size">20dp</dimen>
 </resources>

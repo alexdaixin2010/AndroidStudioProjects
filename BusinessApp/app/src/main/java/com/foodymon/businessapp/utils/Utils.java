@@ -39,15 +39,15 @@ public class Utils {
         return false;
     }
 
-    public static boolean isNullOrEmpty(Map<?,?> map) {
+    public static boolean isEmpty(Map<?,?> map) {
         return map == null || map.isEmpty();
     }
 
-    public static <T> boolean isNullOrEmpty(T[] array) {
+    public static <T> boolean isEmpty(T[] array) {
         return array == null || array.length == 0;
     }
 
-    public static <T> boolean isNullOrEmpty(Collection<?> array) {
+    public static <T> boolean isEmpty(Collection<?> array) {
         return array == null || array.size() == 0;
     }
 

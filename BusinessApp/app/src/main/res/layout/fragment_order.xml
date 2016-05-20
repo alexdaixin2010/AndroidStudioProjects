@@ -4,11 +4,62 @@
              android:layout_height="match_parent"
              tools:context="com.foodymon.businessapp.main.activity.OrderFragment">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white_background"
+            android:padding="@dimen/section_padding">
+
+            <TextView
+                android:id="@+id/order_btn_all"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="All Orders"
+                android:paddingLeft="@dimen/button_side_padding"
+                android:paddingRight="@dimen/button_side_padding"
+                android:paddingTop="@dimen/button_top_padding"
+                android:paddingBottom="@dimen/button_top_padding"
+                android:layout_marginRight="@dimen/button_margin"
+                android:background="@drawable/button_bg"
+                android:textSize="@dimen/order_title_font"/>
+
+            <TextView
+                android:id="@+id/order_btn_submit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Submitted"
+                android:paddingLeft="@dimen/button_side_padding"
+                android:paddingRight="@dimen/button_side_padding"
+                android:paddingTop="@dimen/button_top_padding"
+                android:paddingBottom="@dimen/button_top_padding"
+                android:layout_marginRight="@dimen/button_margin"
+                android:background="@drawable/button_bg"
+                android:textSize="@dimen/order_title_font"/>
+
+            <TextView
+                android:id="@+id/order_btn_ip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="In Process"
+                android:paddingLeft="@dimen/button_side_padding"
+                android:paddingRight="@dimen/button_side_padding"
+                android:paddingTop="@dimen/button_top_padding"
+                android:paddingBottom="@dimen/button_top_padding"
+                android:layout_marginRight="@dimen/button_margin"
+                android:background="@drawable/button_bg"
+                android:textSize="@dimen/order_title_font"/>
+
+        </LinearLayout>
+
     <android.support.v4.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#33808080"
-        android:id="@+id/swipeRefreshLayout">
+        android:background="@color/white_background"
+        android:id="@+id/order_swipeRefreshLayout">
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -17,5 +68,7 @@
 
         </android.support.v7.widget.RecyclerView>
     </android.support.v4.widget.SwipeRefreshLayout>
+
+    </LinearLayout>
 
 </FrameLayout>

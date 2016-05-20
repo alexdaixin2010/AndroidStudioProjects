@@ -6,10 +6,12 @@
     <color name="divider_grey">#77000000</color>
     <color name="white_background">#FFFFFF</color>
     <color name="login_button">#90C3D4</color>
+    <color name="light_grey_38">#38000000</color>
     <color name="light_grey_22">#22000000</color>
     <color name="light_grey_18">#18000000</color>
     <color name="light_grey_10">#10000000</color>
     <color name="light_grey_05">#05000000</color>
+    <color name="light_grey_01">#01000000</color>
     <color name="black_99">#99000000</color>
     <color name="button_grey">#66000000</color>
     <color name="actionbar_light_grey">#33000000</color>

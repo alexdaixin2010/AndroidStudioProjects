@@ -3,21 +3,17 @@ package com.foodymon.businessapp.service;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.foodymon.businessapp.constant.Constant;
+import com.foodymon.businessapp.constant.Constants;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
-
-import com.foodymon.businessapp.R;
 
 import java.io.IOException;
 
@@ -35,14 +31,14 @@ public class TopicRegistrationService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        String key = intent.getStringExtra(Constant.KEY);
-        String topic = intent.getStringExtra(Constant.TOPIC);
+        String key = intent.getStringExtra(Constants.KEY);
+        String topic = intent.getStringExtra(Constants.TOPIC);
         switch (key) {
-            case Constant.SUBSCRIBE:
+            case Constants.SUBSCRIBE:
                 // subscribe to a topic
                 subscribeTopics(topic);
                 break;
-            case Constant.UNSUBSCRIBE:
+            case Constants.UNSUBSCRIBE:
                 unsubscribeFromTopic(topic);
                 break;
             default:
@@ -63,12 +59,12 @@ public class TopicRegistrationService extends IntentService {
         InstanceID instanceID = InstanceID.getInstance(this);
         String token = null;
         try {
-            token = instanceID.getToken(Constant.SENDER_ID,
+            token = instanceID.getToken(Constants.SENDER_ID,
                 GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
             GcmPubSub pubSub = GcmPubSub.getInstance(this);
             pubSub.subscribe(token, "/topics/" + topic, null);
 
-            Intent registrationComplete = new Intent(Constant.REGISTRATION_COMPLETE);
+            Intent registrationComplete = new Intent(Constants.REGISTRATION_COMPLETE);
             registrationComplete.putExtra("token", token);
             LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
         } catch (IOException e) {
@@ -84,7 +80,7 @@ public class TopicRegistrationService extends IntentService {
         InstanceID instanceID = InstanceID.getInstance(getApplicationContext());
         String token = null;
         try {
-            token = instanceID.getToken(Constant.SENDER_ID,
+            token = instanceID.getToken(Constants.SENDER_ID,
                 GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
             if (token != null) {
                 pubSub.unsubscribe(token, "/topics/" + topic);

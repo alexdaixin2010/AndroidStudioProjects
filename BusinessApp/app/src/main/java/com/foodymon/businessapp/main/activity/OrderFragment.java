@@ -1,32 +1,37 @@
 package com.foodymon.businessapp.main.activity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
-import android.net.Uri;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.os.SystemClock;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.foodymon.businessapp.R;
-import com.foodymon.businessapp.constant.Constant;
+import com.foodymon.businessapp.constant.Constants;
+import com.foodymon.businessapp.datastructure.Customer;
 import com.foodymon.businessapp.datastructure.LiteOrder;
 import com.foodymon.businessapp.datastructure.LiteOrderList;
 import com.foodymon.businessapp.datastructure.Order;
 import com.foodymon.businessapp.main.BusinessApplication;
+import com.foodymon.businessapp.main.view.CircleImageView;
 import com.foodymon.businessapp.service.OrderService;
 import com.foodymon.businessapp.service.UICallBack;
+import com.foodymon.businessapp.utils.ImageLoader;
 import com.foodymon.businessapp.utils.Utils;
 
 import java.text.ParseException;
@@ -45,8 +50,26 @@ public class OrderFragment extends Fragment {
     private RecyclerViewAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private GridLayoutManager mGridLayoutManager;
-    private LiteOrderList mOrderList;
+    private TextView mOrderAllBtn;
+    private TextView mOrderSubmittedBtn;
+    private TextView mOrderIPBtn;
+    private LiteOrderList liteOrderList;
+
     private long currentTimeStamp;
+    int bgColorNoSelect;
+    int bgColorSelected;
+
+    Drawable order_submit_bg;
+    Drawable order_accept_bg;
+    Drawable order_ip_bg;
+
+    private ORDER_MODE orderMode = ORDER_MODE.SUBMITTED;
+
+    enum ORDER_MODE {
+        ALL,
+        SUBMITTED,
+        INPROCESS,
+    }
 
     private BusinessApplication app;
 
@@ -68,21 +91,58 @@ public class OrderFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        app = (BusinessApplication)getActivity().getApplication();
+        app = (BusinessApplication) getActivity().getApplication();
+
+        loadResource();
 
         // Inflate the layout for this fragment
-        View view =  inflater.inflate(R.layout.fragment_order, container, false);
-        mSwipeRefreshLayout = (SwipeRefreshLayout)view.findViewById(R.id.swipeRefreshLayout);
+        View view = inflater.inflate(R.layout.fragment_order, container, false);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.order_swipeRefreshLayout);
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshListener());
 
 
-        mRecyclerView = (RecyclerView)view.findViewById(R.id.recyclerView);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         mLayoutManager = new LinearLayoutManager(getActivity());
         mGridLayoutManager = new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.order_span_count));
         mRecyclerView.setLayoutManager(mGridLayoutManager);
 
         mRecyclerView.setBackgroundColor(Color.argb(230, 255, 255, 255));
+
+        mOrderAllBtn = (TextView)view.findViewById(R.id.order_btn_all);
+        mOrderSubmittedBtn = (TextView)view.findViewById(R.id.order_btn_submit);
+        mOrderIPBtn = (TextView)view.findViewById(R.id.order_btn_ip);
+
+        setOrderBtnColor();
+
+        mOrderAllBtn.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                orderMode = ORDER_MODE.ALL;
+                setOrderBtnColor();
+                refreshOrderList(false);
+                return true;
+            }
+        });
+
+        mOrderSubmittedBtn.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                orderMode = ORDER_MODE.SUBMITTED;
+                setOrderBtnColor();
+                refreshOrderList(false);
+                return true;
+            }
+        });
+        mOrderIPBtn.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                orderMode = ORDER_MODE.INPROCESS;
+                setOrderBtnColor();
+                refreshOrderList(false);
+                return true;
+            }
+        });
 
         return view;
     }
@@ -90,8 +150,10 @@ public class OrderFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        LiteOrderList liteOrderList = getActivity().getIntent()
-            .getParcelableExtra(LiteOrderList.BUNDLE_NAME);
+        if(liteOrderList == null) {
+            liteOrderList = getActivity().getIntent()
+                .getParcelableExtra(LiteOrderList.BUNDLE_NAME);
+        }
         mAdapter = new RecyclerViewAdapter(liteOrderList);
         mRecyclerView.setAdapter(mAdapter);
 
@@ -112,24 +174,78 @@ public class OrderFragment extends Fragment {
         mListener = null;
     }
 
-    public void refreshOrderList() {
-        OrderService.getUnpaidLiteOrderList(app.getStoreId(),  new UICallBack<LiteOrderList>() {
-            @Override
-            public void onPreExecute() {
+    private void loadResource() {
+        Resources res = getActivity().getResources();
+        bgColorNoSelect = res.getColor(R.color.light_grey_10);
+        bgColorSelected = res.getColor(R.color.light_grey_38);
 
-            }
+        order_submit_bg = res.getDrawable(R.drawable.state_new_background_480);
+        order_accept_bg = res.getDrawable(R.drawable.state_completed_background_480);
+        order_ip_bg = res.getDrawable(R.drawable.state_accepted_background_480);
+    }
 
-            @Override
-            public void onPostExecute(LiteOrderList liteOrderList) {
-                // refresh time stamp
-                currentTimeStamp = System.currentTimeMillis();
+    public void refreshOrderList(final boolean isSwipe) {
+        switch (orderMode) {
+            case ALL:
+                OrderService.getAllLiteOrderList(app.getStoreId(), new UICallBack<LiteOrderList>() {
+                    @Override
+                    public void onPreExecute() {
 
-                // set order list
-                OrderFragment.this.mAdapter.updateOrder(liteOrderList);
-                mSwipeRefreshLayout.setRefreshing(false);
-                notifyActivity(Constant.ORDER_REFRESH_DONE);
-            }
-        });
+                    }
+
+                    @Override
+                    public void onPostExecute(LiteOrderList liteOrderList) {
+                        // refresh time stamp
+                        currentTimeStamp = System.currentTimeMillis();
+                        // set order list
+                        OrderFragment.this.mAdapter.updateOrder(liteOrderList);
+                        if (isSwipe) {
+                            mSwipeRefreshLayout.setRefreshing(false);
+                        }
+                        notifyActivity(Constants.ORDER_REFRESH_DONE);
+                    }
+                }, app);
+                break;
+            case SUBMITTED:
+                OrderService.getSubmittedLiteOrderList(app.getStoreId(), new UICallBack<LiteOrderList>() {
+                    @Override
+                    public void onPreExecute() {
+                    }
+
+                    @Override
+                    public void onPostExecute(LiteOrderList liteOrderList) {
+                        // refresh time stamp
+                        currentTimeStamp = System.currentTimeMillis();
+
+                        // set order list
+                        OrderFragment.this.mAdapter.updateOrder(liteOrderList);
+                        if (isSwipe) {
+                            mSwipeRefreshLayout.setRefreshing(false);
+                        }
+                        notifyActivity(Constants.ORDER_REFRESH_DONE);
+                    }
+                }, app);
+                break;
+            case INPROCESS:
+                OrderService.getIPLiteOrderList(app.getStoreId(), new UICallBack<LiteOrderList>() {
+                    @Override
+                    public void onPreExecute() {
+                    }
+
+                    @Override
+                    public void onPostExecute(LiteOrderList liteOrderList) {
+                        // refresh time stamp
+                        currentTimeStamp = System.currentTimeMillis();
+                        // set order list
+                        OrderFragment.this.mAdapter.updateOrder(liteOrderList);
+                        if (isSwipe) {
+                            mSwipeRefreshLayout.setRefreshing(false);
+                        }
+                        notifyActivity(Constants.ORDER_REFRESH_DONE);
+                    }
+                }, app);
+                break;
+        }
     }
 
     /**
@@ -137,21 +253,21 @@ public class OrderFragment extends Fragment {
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p>
+     * <p/>
      * See the Android Training lesson <a href=
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-         void onFragmentInteraction(Intent intent);
+        void onFragmentInteraction(Intent intent);
     }
 
     public void notifyActivity(String action) {
         if (mListener != null) {
             Intent intent = new Intent();
-            intent.putExtra(Constant.INTENT_FROM, Constant.ORDER_FRAGMENT);
-            intent.putExtra(Constant.INTENT_ACTION, action);
+            intent.putExtra(Constants.INTENT_FROM, Constants.ORDER_FRAGMENT);
+            intent.putExtra(Constants.INTENT_ACTION, action);
             mListener.onFragmentInteraction(intent);
         }
     }
@@ -161,27 +277,36 @@ public class OrderFragment extends Fragment {
 
         private class OrderViewHolder extends RecyclerView.ViewHolder {
             View card;
+            LinearLayout orderStatusSection;
+            TextView customerName;
             TextView orderId;
             TextView table;
             TextView time;
             TextView status;
+            CircleImageView img;
+
             public OrderViewHolder(View v) {
                 super(v);
                 card = v;
-                orderId = (TextView)v.findViewById(R.id.order_id);
-                table = (TextView)v.findViewById(R.id.order_table);
-                time = (TextView)v.findViewById(R.id.order_time);
-                status = (TextView)v.findViewById(R.id.order_status);
+                orderStatusSection = (LinearLayout) v.findViewById(R.id.order_status_section);
+                customerName = (TextView) v.findViewById(R.id.order_customer_name);
+                orderId = (TextView) v.findViewById(R.id.order_id);
+                table = (TextView) v.findViewById(R.id.order_table);
+                time = (TextView) v.findViewById(R.id.order_time);
+                status = (TextView) v.findViewById(R.id.order_status);
+                img = (CircleImageView) v.findViewById(R.id.order_user_img);
             }
         }
 
         RecyclerViewAdapter(LiteOrderList listOrderList) {
-            orders.addAll(listOrderList.getOrders());
+            if (listOrderList != null && !Utils.isEmpty(listOrderList.getOrders())) {
+                orders.addAll(listOrderList.getOrders());
+            }
         }
 
         void updateOrder(LiteOrderList listOrderList) {
             orders.clear();
-            if(!Utils.isNullOrEmpty(listOrderList.getOrders())) {
+            if (listOrderList != null && !Utils.isEmpty(listOrderList.getOrders())) {
                 orders.addAll(listOrderList.getOrders());
             }
             this.notifyDataSetChanged();
@@ -197,20 +322,46 @@ public class OrderFragment extends Fragment {
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             final LiteOrder order = orders.get(position);
+            Customer customer = order.getCustomer();
+            int id = getResources().getIdentifier("monkey", "drawable", getActivity().getPackageName());
+
             OrderViewHolder viewHolder = (OrderViewHolder) holder;
-            viewHolder.orderId.setText(order.getOrderId()+"/"+ order.getSub_id());
+            if (customer != null) {
+                viewHolder.customerName.setText(customer.getFirstName() + " " + customer.getLastName());
+                if (!TextUtils.isEmpty(customer.getProfilePic())) {
+                    ImageLoader.loadImage(viewHolder.img, customer.getProfilePic());
+                } else {
+                    viewHolder.img.setImageResource(id);
+                }
+            } else {
+                viewHolder.customerName.setText("Anonymous");
+                viewHolder.img.setImageResource(id);
+            }
+            Drawable statusBg = null;
+            if (order.getStatus().equals(Constants.SUB_ORDER_SUBMITTED)) {
+                statusBg = order_submit_bg;
+            } else if (order.getStatus().equals(Constants.SUB_ORDER_IN_PROCESS)) {
+                statusBg = order_ip_bg;
+            } else if (order.getStatus().equals(Constants.SUB_ORDER_ACCEPTED)) {
+                statusBg = order_accept_bg;
+            }
+            if (statusBg != null) {
+                viewHolder.orderStatusSection.setBackground(statusBg);
+            }
+
+            viewHolder.orderId.setText(order.getOrderId() + "/" + order.getSubId());
             viewHolder.table.setText(order.getTable());
 
 
             String waitingTimeString;
             try {
                 Date date = Utils.converterISO8601StringToDate(order.getCreatedTime());
-            long millis = currentTimeStamp - date.getTime();
-            waitingTimeString = String.format("%02d:%02d",
-                TimeUnit.MILLISECONDS.toMinutes(millis),
-                TimeUnit.MILLISECONDS.toSeconds(millis) -
-                    TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
-            );
+                long millis = currentTimeStamp - date.getTime();
+                waitingTimeString = String.format("%02d:%02d",
+                    TimeUnit.MILLISECONDS.toMinutes(millis),
+                    TimeUnit.MILLISECONDS.toSeconds(millis) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
+                );
             } catch (ParseException e) {
                 waitingTimeString = "N/A";
             }
@@ -218,10 +369,10 @@ public class OrderFragment extends Fragment {
             viewHolder.time.setText("11:20");
             viewHolder.status.setText(order.getStatus());
 
-            viewHolder.card.setOnClickListener(new View.OnClickListener(){
+            viewHolder.card.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    loadOrderDetails(order.getOrderId(), order.getSub_id());
+                    loadOrderDetails(order.getOrderId(), order.getSubId());
 
                 }
             });
@@ -233,32 +384,77 @@ public class OrderFragment extends Fragment {
         }
     }
 
+    private void setOrderBtnColor() {
+        ((GradientDrawable) mOrderAllBtn.getBackground()).setColor(bgColorNoSelect);
+        ((GradientDrawable) mOrderIPBtn.getBackground()).setColor(bgColorNoSelect);
+        ((GradientDrawable) mOrderSubmittedBtn.getBackground()).setColor(bgColorNoSelect);
+        switch (orderMode) {
+            case ALL:
+                ((GradientDrawable) mOrderAllBtn.getBackground()).setColor(bgColorSelected);
+                break;
+            case SUBMITTED:
+                ((GradientDrawable) mOrderSubmittedBtn.getBackground()).setColor(bgColorSelected);
+                break;
+            case INPROCESS:
+                ((GradientDrawable) mOrderIPBtn.getBackground()).setColor(bgColorSelected);
+                break;
+        }
+    }
+
     private void startOrderDetailsActivity(Order order) {
         Intent intent = new Intent(getActivity(), OrderDetailsActivity.class);
         intent.putExtra(Order.BUNDLE_NAME, order);
-        getActivity().startActivityForResult(intent, Constant.ORDER_DETAIL_REQUEST);
+        getActivity().startActivityForResult(intent, Constants.ORDER_DETAIL_REQUEST);
     }
 
 
-    private void loadOrderDetails(String orderId, String subOrderId) {
+    private void loadOrderDetails(final String orderId, final String subOrderId) {
         OrderService.getOrder(orderId, subOrderId, new UICallBack<Order>() {
             @Override
             public void onPreExecute() {
-                notifyActivity(Constant.SHOW_LOADING);
+                notifyActivity(Constants.SHOW_LOADING);
             }
 
             @Override
             public void onPostExecute(Order order) {
-                notifyActivity(Constant.HIDE_LOADING);
-                startOrderDetailsActivity(order);
+                //notifyActivity(Constants.HIDE_LOADING);
+                //startOrderDetailsActivity(order);
+                if (!app.getUser().getUserId().equals(order.getLiteOrder().getOperator()) && order.getLiteOrder().getStatus().equals("IN_PROCESS")) {
+                    Toast.makeText(getActivity().getApplicationContext(), "This order is already in process",
+                        Toast.LENGTH_SHORT).show();
+                } else if (order.getLiteOrder().getStatus().equals(Constants.SUB_ORDER_SUBMITTED)) {
+                    lockOrderDetails(orderId, subOrderId, order);
+                } else {
+                    notifyActivity(Constants.HIDE_LOADING);
+                    startOrderDetailsActivity(order);
+                }
             }
-        });
+        }, app);
+    }
+
+    private void lockOrderDetails(String orderId, String subOrderId, final Order order) {
+        OrderService.lockOrder(orderId, subOrderId, app.getUser().getUserId(), true, new UICallBack<Boolean>() {
+            @Override
+            public void onPreExecute() {
+            }
+
+            @Override
+            public void onPostExecute(Boolean response) {
+                if (response != null && response == Boolean.TRUE) {
+                    notifyActivity(Constants.HIDE_LOADING);
+                    startOrderDetailsActivity(order);
+                } else {
+                    Toast.makeText(getActivity().getApplicationContext(), "Cannot lock this order",
+                        Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, app);
     }
 
     class SwipeRefreshListener implements SwipeRefreshLayout.OnRefreshListener {
         @Override
         public void onRefresh() {
-            refreshOrderList();
+            refreshOrderList(true);
         }
     }
 

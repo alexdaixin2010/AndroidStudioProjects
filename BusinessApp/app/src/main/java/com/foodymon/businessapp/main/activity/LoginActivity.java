@@ -12,17 +12,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.foodymon.businessapp.R;
-import com.foodymon.businessapp.constant.Constant;
-import com.foodymon.businessapp.datastructure.LiteOrder;
+import com.foodymon.businessapp.constant.Constants;
 import com.foodymon.businessapp.datastructure.LiteOrderList;
 import com.foodymon.businessapp.main.BusinessApplication;
 import com.foodymon.businessapp.datastructure.StoreStaff;
 import com.foodymon.businessapp.service.LoginService;
 import com.foodymon.businessapp.service.OrderService;
-import com.foodymon.businessapp.service.TopicRegistrationService;
 import com.foodymon.businessapp.service.UICallBack;
 import com.foodymon.businessapp.utils.Utils;
 
@@ -35,7 +32,6 @@ import android.support.v4.content.LocalBroadcastManager;
  */
 public class LoginActivity extends Activity{
     BusinessApplication app;
-    LoginService mLoginService;
     private TextView user;
     private TextView store;
     private TextView password;
@@ -57,8 +53,6 @@ public class LoginActivity extends Activity{
 
         app = (BusinessApplication) getApplication();
 
-        mLoginService = app.getLoginService();
-
         user = (TextView) findViewById(R.id.login_user_id);
         store = (TextView) findViewById(R.id.login_store_id);
         password = (TextView) findViewById(R.id.login_password);
@@ -78,7 +72,7 @@ public class LoginActivity extends Activity{
                     return;
                 }
 
-                mLoginService.authenticate(storeId, userName, pw, new UICallBack<StoreStaff>() {
+                LoginService.authenticate(LoginActivity.this, storeId, userName, pw, new UICallBack<StoreStaff>() {
                     @Override
                     public void onPreExecute() {
                         loading.setVisibility(View.VISIBLE);
@@ -88,17 +82,10 @@ public class LoginActivity extends Activity{
                     @Override
                     public void onPostExecute(@Nullable StoreStaff user) {
                         loginButton.setEnabled(true);
-                        if (Utils.isValidUser(user) || true) {
+                        if (Utils.isValidUser(user)) {
                             app.setStoreId(storeId);
-                            if (Utils.checkPlayServices(LoginActivity.this)) {
-                                Intent intent = new Intent(LoginActivity.this, TopicRegistrationService.class);
-                                intent.putExtra(Constant.KEY, Constant.SUBSCRIBE);
-                                intent.putExtra(Constant.TOPIC, storeId+"-order");
-                                startService(intent);
-                            } else {
-                                Toast.makeText(LoginActivity.this.getApplicationContext(), "subscribe error, need google play service",
-                                    Toast.LENGTH_SHORT).show();
-                            }
+                            app.setUser(user);
+                            LoginService.registerGCM(LoginActivity.this, storeId);
                             loadOrderList(storeId, userName);
                         } else {
                             invalid.setVisibility(View.VISIBLE);
@@ -106,7 +93,7 @@ public class LoginActivity extends Activity{
                         }
                     }
 
-                });
+                }, app);
             }
         });
 
@@ -115,7 +102,7 @@ public class LoginActivity extends Activity{
             @Override
             public void onReceive(Context context, Intent intent) {
                 // checking for type intent filter
-                if (intent.getAction().equals(Constant.REGISTRATION_COMPLETE)) {
+                if (intent.getAction().equals(Constants.REGISTRATION_COMPLETE)) {
                     subscriptionDone = true;
                     maybeStartMainActivity();
                 }
@@ -132,11 +119,11 @@ public class LoginActivity extends Activity{
 
         // register GCM registration complete receiver
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
-            new IntentFilter(Constant.REGISTRATION_COMPLETE));
+            new IntentFilter(Constants.REGISTRATION_COMPLETE));
     }
 
     private void loadOrderList(String storeId, String userId) {
-        OrderService.getUnpaidLiteOrderList(storeId, new UICallBack<LiteOrderList>() {
+        OrderService.getSubmittedLiteOrderList(storeId, new UICallBack<LiteOrderList>() {
             @Override
             public void onPreExecute() {
 
@@ -148,7 +135,7 @@ public class LoginActivity extends Activity{
                 LoginActivity.this.liteOrderList = liteOrderList;
                 maybeStartMainActivity();
             }
-        });
+        }, app);
     }
 
     @Override

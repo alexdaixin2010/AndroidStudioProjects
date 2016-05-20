@@ -2,21 +2,20 @@ package com.foodymon.businessapp.main;
 
 import android.app.Application;
 
+import com.foodymon.businessapp.datastructure.StoreStaff;
 import com.foodymon.businessapp.service.LoginService;
 
 /**
  * Created by alexdai on 4/7/16.
  */
 public class BusinessApplication extends Application {
-    private String mUserId;
+    private StoreStaff user;
     private String storeId;
-    private LoginService mLoginService;
+    private String token;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        //Init
-        mLoginService = new LoginService();
 
     }
 
@@ -28,17 +27,19 @@ public class BusinessApplication extends Application {
         this.storeId = storeId;
     }
 
-    public LoginService getLoginService() {
-        return mLoginService;
+    public void setUser(StoreStaff user) {
+        this.user = user;
     }
 
-
-    public void setUserId(String userId) {
-        this.mUserId = userId;
+    public StoreStaff getUser() {
+        return user;
     }
 
-    public String getUserId() {
-        return mUserId;
+    public String getToken() {
+        return token;
     }
 
+    public void setToken(String token) {
+        this.token = token;
+    }
 }

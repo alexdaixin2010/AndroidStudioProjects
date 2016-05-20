@@ -2,11 +2,11 @@ package com.foodymon.businessapp.service;
 
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Base64;
 
+import com.foodymon.businessapp.constant.Constants;
 import com.foodymon.businessapp.datastructure.LiteOrderList;
 import com.foodymon.businessapp.datastructure.Order;
-import com.foodymon.businessapp.datastructure.StoreStaff;
+import com.foodymon.businessapp.main.BusinessApplication;
 import com.foodymon.businessapp.utils.HttpUtils;
 import com.google.gson.Gson;
 
@@ -19,10 +19,10 @@ import java.util.HashMap;
 public class OrderService {
 
 
-    public static void getLiteOrderList(String storeId, String status,
-                                          final UICallBack<LiteOrderList> callBack) {
 
-        String[] params = new String[]{"storeId", storeId, "status", status, "subStatus","SUBMITTED"};
+    public static void getLiteOrderList(final String storeId, final String status, final String subStatus,
+                                        final UICallBack<LiteOrderList> callBack, final BusinessApplication app) {
+
         new TaskRunner<String, LiteOrderList>(new Task<String, LiteOrderList>() {
             @Override
             public void onPreExecute() {
@@ -32,7 +32,11 @@ public class OrderService {
             @Override
             @Nullable
             public LiteOrderList doInBackground(String[] params) {
-                LiteOrderList orderList = HttpUtils.get("/bp/liteOrderList", params, null, LiteOrderList.class);
+                HashMap<String, String> paramMap = new HashMap<>();
+                paramMap.put("storeId", storeId);
+                paramMap.put("status", status);
+                paramMap.put("subStatus",subStatus);
+                LiteOrderList orderList = HttpUtils.get("/bp/liteOrderList", paramMap, null, LiteOrderList.class, app);
                 return orderList;
             }
 
@@ -41,17 +45,23 @@ public class OrderService {
                 callBack.onPostExecute(orderList);
 
             }
-        }).execute(params);
+        }).execute(null);
     }
 
-    public static void getUnpaidLiteOrderList(String storeId, final UICallBack<LiteOrderList> callBack) {
-        getLiteOrderList(storeId, "UNPAID", callBack);
+    public static void getSubmittedLiteOrderList(String storeId, final UICallBack<LiteOrderList> callBack, BusinessApplication app) {
+        getLiteOrderList(storeId, Constants.ORDER_UNPAID, Constants.SUB_ORDER_SUBMITTED, callBack, app);
     }
 
-    public static <T> void getOrder(String orderId, String subOrderId,
-                                    final UICallBack<Order> callBack) {
+    public static void getIPLiteOrderList(String storeId, final UICallBack<LiteOrderList> callBack, BusinessApplication app) {
+        getLiteOrderList(storeId, Constants.ORDER_UNPAID, Constants.SUB_ORDER_IN_PROCESS, callBack, app);
+    }
 
-        String[] params = new String[]{"orderId", orderId, "subId", subOrderId};
+    public static void getAllLiteOrderList(String storeId, final UICallBack<LiteOrderList> callBack, BusinessApplication app) {
+        getLiteOrderList(storeId, Constants.ORDER_UNPAID, null, callBack, app);
+    }
+
+    public static <T> void getOrder(final String orderId, final String subOrderId,
+                                    final UICallBack<Order> callBack, final BusinessApplication app) {
         new TaskRunner<String, Order>(new Task<String, Order>() {
             @Override
             public void onPreExecute() {
@@ -61,7 +71,10 @@ public class OrderService {
             @Override
             @Nullable
             public Order doInBackground(String[] params) {
-                Order order = HttpUtils.get("/bp/orderDetails", params, null, Order.class);
+                HashMap<String, String> paramMap = new HashMap<>();
+                paramMap.put("orderId", orderId);
+                paramMap.put("subId",  subOrderId);
+                Order order = HttpUtils.get("/bp/orderDetails", paramMap, null, Order.class, app);
                 return order;
             }
 
@@ -70,12 +83,11 @@ public class OrderService {
                 callBack.onPostExecute(order);
 
             }
-        }).execute(params);
+        }).execute(null);
     }
 
-    public static void acceptOrder(final String orderId, final String subId, final String userId, final Order order, final UICallBack<Boolean> callBack) {
+    public static void acceptOrder(final String orderId, final String subId, final String userId, final Order order, final UICallBack<Boolean> callBack, final BusinessApplication app) {
 
-        String[] params = new String[]{"operator", userId};
         new TaskRunner<String, Boolean>(new Task<String, Boolean>() {
             @Override
             public void onPreExecute() {
@@ -86,7 +98,6 @@ public class OrderService {
             @Nullable
             public Boolean doInBackground(String[] params) {
                 byte[] body = new byte[0];
-
                 if(order != null) {
                     try {
                         Gson gson = new Gson();
@@ -95,7 +106,9 @@ public class OrderService {
                     } catch (UnsupportedEncodingException e) {
                     }
                 }
-                Boolean response = HttpUtils.post("/bp/" + orderId + "/accept/" + subId, params,null, body, Boolean.class);
+                HashMap<String, String> paramMap = new HashMap<>();
+                paramMap.put("operator", userId);
+                Boolean response = HttpUtils.post("/bp/" + orderId + "/accept/" + subId, paramMap,null, null, body, Boolean.class, app);
                 return response;
             }
 
@@ -104,12 +117,11 @@ public class OrderService {
                 callBack.onPostExecute(response);
 
             }
-        }).execute(params);
+        }).execute(null);
     }
 
-    public static void rejectOrder(final String orderId, final String subId, final String userId, final UICallBack<Boolean> callBack) {
+    public static void rejectOrder(final String orderId, final String subId, final String userId, final UICallBack<Boolean> callBack, final BusinessApplication app) {
 
-        String[] params = new String[]{"operator", userId};
         new TaskRunner<String, Boolean>(new Task<String, Boolean>() {
             @Override
             public void onPreExecute() {
@@ -119,7 +131,9 @@ public class OrderService {
             @Override
             @Nullable
             public Boolean doInBackground(String[] params) {
-                Boolean response = HttpUtils.post("/bp/" + orderId + "/reject/"+subId, params, null, new byte[0], Boolean.class);
+                HashMap<String, String> paramMap = new HashMap<>();
+                paramMap.put("operator", userId);
+                Boolean response = HttpUtils.post("/bp/" + orderId + "/reject/"+subId, paramMap, null, null, new byte[0],Boolean.class, app);
                 return response;
             }
 
@@ -128,7 +142,33 @@ public class OrderService {
                 callBack.onPostExecute(response);
 
             }
-        }).execute(params);
+        }).execute(null);
+    }
+
+    public static void lockOrder(final String orderId, final String subId, final String userId, final boolean isLock, final UICallBack<Boolean> callBack, final BusinessApplication app) {
+
+        new TaskRunner<String, Boolean>(new Task<String, Boolean>() {
+            @Override
+            public void onPreExecute() {
+                callBack.onPreExecute();
+            }
+
+            @Override
+            @Nullable
+            public Boolean doInBackground(String[] params) {
+                HashMap<String, String> paramMap = new HashMap<>();
+                paramMap.put("operator", userId);
+                paramMap.put("lock", isLock?"true":"false");
+                Boolean response = HttpUtils.post("/bp/"+orderId+"/lock/"+subId, paramMap, null, null, new byte[0],Boolean.class, app);
+                return response;
+            }
+
+            @Override
+            public void onPostExecute(Boolean response) {
+                callBack.onPostExecute(response);
+
+            }
+        }).execute(null);
     }
 
 }
