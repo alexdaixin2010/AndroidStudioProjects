@@ -6,5 +6,5 @@
 
 
     <!-- order detail-->
-    <dimen name="order_detail_status_margin_left">220dp</dimen>
+    <dimen name="order_detail_status_margin_left">2dp</dimen>
 </resources>

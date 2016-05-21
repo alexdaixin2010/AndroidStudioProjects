@@ -77,7 +77,6 @@
 
         <ImageView
             android:id="@+id/nav_iv_customer"
-            android:layout_centerHorizontal="true"
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:src="@drawable/customer_icon"/>

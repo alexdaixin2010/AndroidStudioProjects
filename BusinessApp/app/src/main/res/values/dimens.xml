@@ -21,19 +21,24 @@
     <dimen name="card_elevation">4dp</dimen>
 
     <!-- order -->
-    <dimen name="order_title_font">14dp</dimen>
-    <dimen name="order_subtitle_font">16dp</dimen>
-    <dimen name="order_subtitle_large_font">38dp</dimen>
+    <dimen name="order_card_title_font">14dp</dimen>
+    <dimen name="order_card_subtitle_font">16dp</dimen>
+    <dimen name="order_card_subtitle_large_font">38dp</dimen>
 
     <dimen name="order_card_top_padding">10dp</dimen>
     <dimen name="order_card_side_padding">10dp</dimen>
     <dimen name="order_card_status_section_height">100dp</dimen>
+    <dimen name="order_card_status_margin_left">36dp</dimen>
     <dimen name="order_card_section_padding">10dp</dimen>
+    <dimen name="order_card_section_item_small_padding">4dp</dimen>
     <dimen name="order_card_section_item_padding">8dp</dimen>
     <dimen name="order_card_section_item_extra_padding">20dp</dimen>
     <dimen name="order_card_user_img_size">82dp</dimen>
 
     <!-- order detail-->
+    <dimen name="order_detail_status_margin_left">8dp</dimen>
+    <dimen name="order_detail_btn_margin_top">20dp</dimen>
+
     <dimen name="order_detail_card_top_padding">5dp</dimen>
     <dimen name="order_detail_card_side_padding">5dp</dimen>
     <dimen name="order_detail_item_margin">10dp</dimen>

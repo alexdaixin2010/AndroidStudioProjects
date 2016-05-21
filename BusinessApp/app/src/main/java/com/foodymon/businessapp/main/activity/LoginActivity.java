@@ -85,7 +85,7 @@ public class LoginActivity extends Activity{
                         if (Utils.isValidUser(user)) {
                             app.setStoreId(storeId);
                             app.setUser(user);
-                            LoginService.registerGCM(LoginActivity.this, storeId);
+                            LoginService.registerGCM(LoginActivity.this, app.getOrderTopicHeader());
                             loadOrderList(storeId, userName);
                         } else {
                             invalid.setVisibility(View.VISIBLE);
@@ -108,15 +108,11 @@ public class LoginActivity extends Activity{
                 }
             }
         };
-
-
     }
-
 
     @Override
     protected void onResume() {
         super.onResume();
-
         // register GCM registration complete receiver
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
             new IntentFilter(Constants.REGISTRATION_COMPLETE));
@@ -140,6 +136,12 @@ public class LoginActivity extends Activity{
 
     @Override
     protected void onDestroy() {
+        try {
+            if (mRegistrationBroadcastReceiver != null)
+                LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        } catch (Exception e) {
+
+        }
         super.onDestroy();
     }
 

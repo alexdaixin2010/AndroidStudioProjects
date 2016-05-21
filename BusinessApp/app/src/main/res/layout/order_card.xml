@@ -14,9 +14,9 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center"
-                                        card_view:cardUseCompatPadding="true"
                                         card_view:cardCornerRadius="@dimen/card_radius"
-                                        card_view:cardElevation="@dimen/card_elevation">
+                                        card_view:cardElevation="@dimen/card_elevation"
+                                        card_view:cardUseCompatPadding="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -29,32 +29,24 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical"
+                android:padding="@dimen/order_card_section_item_padding">
 
-                <LinearLayout
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="@dimen/order_card_section_item_padding">
+                    android:text="@string/customer"
+                    android:textColor="@color/light_grey_22"
+                    android:textSize="@dimen/order_card_title_font"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/customer"
-                        android:textColor="@color/light_grey_22"
-                        android:textSize="@dimen/order_title_font"/>
-
-                    <TextView
-                        android:id="@+id/order_customer_name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="MaryJone"
-                        android:textColor="@color/black_99"
-                        android:textSize="@dimen/order_subtitle_font"/>
-                </LinearLayout>
-
+                <TextView
+                    android:id="@+id/order_customer_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="MaryJone"
+                    android:textColor="@color/black_99"
+                    android:textSize="@dimen/order_card_subtitle_font"/>
             </LinearLayout>
-
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -74,7 +66,7 @@
                         android:layout_height="wrap_content"
                         android:text="Time"
                         android:textColor="@color/light_grey_22"
-                        android:textSize="@dimen/order_title_font"/>
+                        android:textSize="@dimen/order_card_title_font"/>
 
                     <TextView
                         android:id="@+id/order_time"
@@ -82,48 +74,47 @@
                         android:layout_height="wrap_content"
                         android:text="1:12"
                         android:textColor="@color/black_99"
-                        android:textSize="@dimen/order_subtitle_font"/>
+                        android:textSize="@dimen/order_card_subtitle_font"/>
                 </LinearLayout>
 
-                  <LinearLayout
-                      android:id="@+id/order_status_section"
+                <LinearLayout
+                    android:id="@+id/order_status_section"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/order_card_status_section_height"
-                    android:layout_marginLeft="@dimen/order_card_section_item_padding"
+                    android:layout_marginLeft="@dimen/order_card_status_margin_left"
                     android:orientation="horizontal">
 
+                    <FrameLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/order_card_section_item_padding">
 
-                      <FrameLayout
-                      android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:padding="@dimen/order_card_section_item_padding">
+                        <com.foodymon.businessapp.main.view.CircleImageView
+                            android:id="@+id/order_user_img"
+                            android:layout_width="@dimen/order_card_user_img_size"
+                            android:layout_height="@dimen/order_card_user_img_size"
 
-                      <com.foodymon.businessapp.main.view.CircleImageView
-                          android:layout_width="@dimen/order_card_user_img_size"
-                          android:layout_height="@dimen/order_card_user_img_size"
-                          android:layout_centerInParent="true"
-                          app:civ_border_width="2dp"
-                          app:civ_border_color="@color/button_grey"
-                          android:src = "@drawable/monkey"
-                          android:id="@+id/order_user_img" />
+                            app:civ_border_color="@color/button_grey"
+                            app:civ_border_width="2dp"/>
 
-                      </FrameLayout>
+                    </FrameLayout>
+
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/user_img_bg"
                         android:orientation="vertical"
-                        android:paddingTop="@dimen/order_card_section_item_padding"
                         android:paddingBottom="@dimen/order_card_section_item_padding"
-                        android:paddingLeft="@dimen/order_card_section_item_padding"
-                        android:paddingRight="@dimen/order_card_section_item_extra_padding">
+                        android:paddingLeft="@dimen/order_card_section_item_small_padding"
+                        android:paddingRight="@dimen/order_card_section_item_small_padding"
+                        android:paddingTop="@dimen/order_card_section_item_padding">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Table #"
                             android:textColor="@color/light_grey_22"
-                            android:textSize="@dimen/order_title_font"/>
+                            android:textSize="@dimen/order_card_title_font"/>
 
                         <TextView
                             android:id="@+id/order_table"
@@ -131,7 +122,7 @@
                             android:layout_height="wrap_content"
                             android:text="12"
                             android:textColor="@color/black_99"
-                            android:textSize="@dimen/order_subtitle_large_font"/>
+                            android:textSize="@dimen/order_card_subtitle_large_font"/>
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -154,7 +145,7 @@
                         android:layout_height="wrap_content"
                         android:text="Order Id"
                         android:textColor="@color/light_grey_22"
-                        android:textSize="@dimen/order_title_font"/>
+                        android:textSize="@dimen/order_card_title_font"/>
 
                     <TextView
                         android:id="@+id/order_id"
@@ -162,7 +153,7 @@
                         android:layout_height="wrap_content"
                         android:text="1231321"
                         android:textColor="@color/black_99"
-                        android:textSize="@dimen/order_subtitle_font"/>
+                        android:textSize="@dimen/order_card_subtitle_font"/>
                 </LinearLayout>
 
                 <View
@@ -186,7 +177,7 @@
                         android:layout_height="wrap_content"
                         android:text="Order status"
                         android:textColor="@color/light_grey_22"
-                        android:textSize="@dimen/order_title_font"/>
+                        android:textSize="@dimen/order_card_title_font"/>
 
                     <TextView
                         android:id="@+id/order_status"
@@ -194,7 +185,7 @@
                         android:layout_height="wrap_content"
                         android:text="Pendding"
                         android:textColor="@color/black_99"
-                        android:textSize="@dimen/order_subtitle_font"/>
+                        android:textSize="@dimen/order_card_subtitle_font"/>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

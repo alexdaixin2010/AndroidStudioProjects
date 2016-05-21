@@ -46,7 +46,6 @@ public class LogoActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-
         // register GCM registration complete receiver
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
             new IntentFilter(Constants.REGISTRATION_COMPLETE));
@@ -54,6 +53,12 @@ public class LogoActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        try {
+            if (mRegistrationBroadcastReceiver != null)
+                LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        } catch (Exception e) {
+
+        }
         super.onDestroy();
     }
 
@@ -66,20 +71,22 @@ public class LogoActivity extends Activity {
         if (!TextUtils.isEmpty(userName) && !TextUtils.isEmpty(storeId)
             && !TextUtils.isEmpty(password) && !TextUtils.isEmpty(token)) {
 
-            LoginService.getUser(LogoActivity.this, storeId, userName, token, new UICallBack<StoreStaff>(){
+            LoginService.getUser(LogoActivity.this, storeId, userName, token, new UICallBack<StoreStaff>() {
                 @Override
                 public void onPreExecute() {
                     // Do nothing.
                 }
+
                 @Override
                 public void onPostExecute(StoreStaff user) {
                     if (Utils.isValidUser(user)) {
                         app.setStoreId(storeId);
                         app.setUser(user);
-                        LoginService.registerGCM(LogoActivity.this, storeId);
+                        app.setToken(token);
+                        LoginService.registerGCM(LogoActivity.this, app.getOrderTopicHeader());
                         loadOrderList(storeId, userName);
                     } else {
-                        authenticate(storeId, userName,password);
+                        authenticate(storeId, userName, password);
                     }
                 }
             }, app);
@@ -99,7 +106,7 @@ public class LogoActivity extends Activity {
         return false;
     }
 
-    private void authenticate(final String storeId, final String userName,final String password){
+    private void authenticate(final String storeId, final String userName, final String password) {
         LoginService.authenticate(LogoActivity.this, storeId, userName, password, new UICallBack<StoreStaff>() {
             @Override
             public void onPreExecute() {
@@ -111,7 +118,7 @@ public class LogoActivity extends Activity {
                 if (Utils.isValidUser(user)) {
                     app.setStoreId(storeId);
                     app.setUser(user);
-                    LoginService.registerGCM(LogoActivity.this, storeId);
+                    LoginService.registerGCM(LogoActivity.this, app.getOrderTopicHeader());
                     loadOrderList(storeId, userName);
                 } else {
                     startLoginActivity();
@@ -149,15 +156,13 @@ public class LogoActivity extends Activity {
         }, app);
     }
 
-
-    void maybeStartMainActivity () {
-        if(subscriptionDone && orderLoadingDone) {
+    void maybeStartMainActivity() {
+        if (subscriptionDone && orderLoadingDone) {
             Intent intent = new Intent(LogoActivity.this, MainActivity.class);
             intent.putExtra(LiteOrderList.BUNDLE_NAME, liteOrderList);
             startActivity(intent);
             finish();
         }
     }
-
 
 }

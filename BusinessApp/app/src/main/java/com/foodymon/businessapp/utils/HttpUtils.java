@@ -130,8 +130,8 @@ public class HttpUtils {
 
             int statusCode = urlConnection.getResponseCode();
             if (statusCode == 200) {
-                InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
-                Reader reader = new InputStreamReader(inputStream);
+                in = new BufferedInputStream(urlConnection.getInputStream());
+                Reader reader = new InputStreamReader(in);
                 if (clazz == Boolean.class) {
                     return (T) Boolean.TRUE;
                 } else if (clazz != null) {
@@ -140,13 +140,15 @@ public class HttpUtils {
                     return output;
                 }
             } else{
-                InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
-                Reader reader = new InputStreamReader(inputStream);
-                Gson gson = new Gson();
-                ServerException error = gson.fromJson(reader, ServerException.class);
-                System.out.println("Error");
+                try {
+                    in = new BufferedInputStream(urlConnection.getInputStream());
+                    Reader reader = new InputStreamReader(in);
+                    Gson gson = new Gson();
+                    ServerException error = gson.fromJson(reader, ServerException.class);
+                    System.out.println(error.toString());
+                }catch (Exception e) {
+                }
             }
-
             if (clazz == Boolean.class) {
                 return (T) Boolean.FALSE;
             }

@@ -4,7 +4,6 @@
     <dimen name="order_card_subtitle_large_font">34dp</dimen>
     <dimen name="order_card_status_margin_left">0dp</dimen>
 
-
     <!-- order detail-->
     <dimen name="order_detail_status_margin_left">220dp</dimen>
 </resources>

@@ -7,4 +7,9 @@ public class ServerException {
 
     private String errorCode;
     private String errorMessage;
+
+    @Override
+    public String toString() {
+        return "Error Code: "+errorCode+", Message: " + errorMessage;
+    }
 }

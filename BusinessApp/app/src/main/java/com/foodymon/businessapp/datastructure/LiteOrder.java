@@ -12,10 +12,10 @@ public class LiteOrder implements Parcelable {
     private Customer customer;
     private String status;
     private String createdTime;
-    private String table = "N/A";
+    private String table = "";
     private String orderType;
     private String subId;
-    private String operator = "N/A";
+    private String operator = "";
 
     protected LiteOrder(Parcel in) {
         orderId = in.readString();
@@ -62,6 +62,10 @@ public class LiteOrder implements Parcelable {
 
     public String getStatus(){
         return this.status;
+    }
+
+    public void setStatus(String s) {
+        this.status = s;
     }
 
     public String getOrderId() {

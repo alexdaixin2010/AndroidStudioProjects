@@ -63,19 +63,39 @@ public class LoginService {
             editor.putString(Constants.SHARED_PREFERENCE_STORE_ID, storeId);
             editor.putString(Constants.SHARED_PREFERENCE_PASSWROD, password);
             editor.putString(Constants.SHARED_PREFERENCE_TOKEN, token);
-            editor.commit();
+            editor.apply();
         }
 
 
         return user != null ? user : null;
     }
 
+    public static void logOut(final UICallBack<Boolean> callBack, final BusinessApplication app){
+        new TaskRunner<String, Boolean>(new Task<String, Boolean>() {
+            @Override
+            public void onPreExecute() {
+                callBack.onPreExecute();
+            }
 
-    public static void registerGCM (Context context, String storeId) {
+            @Override
+            @Nullable
+            public Boolean doInBackground(String[] params) {
+                return HttpUtils.post("/storestaff/logout/", null, null, null, new byte[0], Boolean.class, app);
+            }
+
+            @Override
+            public void onPostExecute(Boolean response) {
+                callBack.onPostExecute(response);
+
+            }
+        }).execute(null);
+    }
+
+    public static void registerGCM (Context context, String topic) {
         if (Utils.checkPlayServices(context)) {
             Intent intent = new Intent(context, TopicRegistrationService.class);
             intent.putExtra(Constants.KEY, Constants.SUBSCRIBE);
-            intent.putExtra(Constants.TOPIC, storeId+"-order");
+            intent.putExtra(Constants.TOPIC, topic);
             context.startService(intent);
         } else {
             Toast.makeText(context.getApplicationContext(), "subscribe error, need google play service",
@@ -111,13 +131,13 @@ public class LoginService {
 
 
 
-    public static void logout(Context context) {
+    public static void cleanPreference(Context context) {
         SharedPreferences.Editor editor = context.getSharedPreferences(Constants.SHARED_PREFERENCE_FOODYMON, context.MODE_PRIVATE).edit();
         editor.putString(Constants.SHARED_PREFERENCE_USER_ID, "");
         editor.putString(Constants.SHARED_PREFERENCE_STORE_ID, "");
         editor.putString(Constants.SHARED_PREFERENCE_PASSWROD, "");
         editor.putString(Constants.SHARED_PREFERENCE_TOKEN, "");
-        editor.commit();
+        editor.apply();
 
         // Do I need to call server API?
 

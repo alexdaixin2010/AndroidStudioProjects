@@ -7,7 +7,8 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.os.SystemClock;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -33,6 +34,7 @@ import com.foodymon.businessapp.service.OrderService;
 import com.foodymon.businessapp.service.UICallBack;
 import com.foodymon.businessapp.utils.ImageLoader;
 import com.foodymon.businessapp.utils.Utils;
+//import com.squareup.leakcanary.RefWatcher;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -44,7 +46,6 @@ import java.util.concurrent.TimeUnit;
 public class OrderFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
-
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
     private RecyclerViewAdapter mAdapter;
@@ -53,17 +54,13 @@ public class OrderFragment extends Fragment {
     private TextView mOrderAllBtn;
     private TextView mOrderSubmittedBtn;
     private TextView mOrderIPBtn;
-    private LiteOrderList liteOrderList;
+    private LiteOrderList mLiteOrderList;
 
-    private long currentTimeStamp;
-    int bgColorNoSelect;
-    int bgColorSelected;
+    int mUnSelectBtnColor;
+    int mSelectedBtnColor;
+    boolean orderClickable = true;
 
-    Drawable order_submit_bg;
-    Drawable order_accept_bg;
-    Drawable order_ip_bg;
-
-    private ORDER_MODE orderMode = ORDER_MODE.SUBMITTED;
+    private ORDER_MODE mOrderMode = ORDER_MODE.SUBMITTED;
 
     enum ORDER_MODE {
         ALL,
@@ -95,6 +92,11 @@ public class OrderFragment extends Fragment {
 
         loadResource();
 
+        if(savedInstanceState != null) {
+            mLiteOrderList = savedInstanceState.getParcelable("orderList");
+            mOrderMode = ORDER_MODE.valueOf(savedInstanceState.getString("orderMode"));
+        }
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_order, container, false);
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.order_swipeRefreshLayout);
@@ -118,7 +120,10 @@ public class OrderFragment extends Fragment {
         mOrderAllBtn.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                orderMode = ORDER_MODE.ALL;
+                if(mOrderMode == ORDER_MODE.ALL){
+                    return false;
+                }
+                mOrderMode = ORDER_MODE.ALL;
                 setOrderBtnColor();
                 refreshOrderList(false);
                 return true;
@@ -128,7 +133,10 @@ public class OrderFragment extends Fragment {
         mOrderSubmittedBtn.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                orderMode = ORDER_MODE.SUBMITTED;
+                if(mOrderMode == ORDER_MODE.SUBMITTED){
+                    return false;
+                }
+                mOrderMode = ORDER_MODE.SUBMITTED;
                 setOrderBtnColor();
                 refreshOrderList(false);
                 return true;
@@ -137,7 +145,10 @@ public class OrderFragment extends Fragment {
         mOrderIPBtn.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                orderMode = ORDER_MODE.INPROCESS;
+                if(mOrderMode == ORDER_MODE.INPROCESS){
+                    return false;
+                }
+                mOrderMode = ORDER_MODE.INPROCESS;
                 setOrderBtnColor();
                 refreshOrderList(false);
                 return true;
@@ -150,14 +161,19 @@ public class OrderFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if(liteOrderList == null) {
-            liteOrderList = getActivity().getIntent()
+        if (mLiteOrderList == null ) {
+            mLiteOrderList = getActivity().getIntent()
                 .getParcelableExtra(LiteOrderList.BUNDLE_NAME);
         }
-        mAdapter = new RecyclerViewAdapter(liteOrderList);
+        mAdapter = new RecyclerViewAdapter(mLiteOrderList);
         mRecyclerView.setAdapter(mAdapter);
+    }
 
-        currentTimeStamp = System.currentTimeMillis();
+    @Override
+    public void onSaveInstanceState(Bundle state) {
+        super.onSaveInstanceState(state);
+        state.putString("orderMode", mOrderMode.toString());
+        state.putParcelable("orderList", mLiteOrderList);
     }
 
     @Override
@@ -174,18 +190,22 @@ public class OrderFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mRecyclerView.setAdapter(null);
+    //    RefWatcher refWatcher = BusinessApplication.getRefWatcher(getActivity());
+     //   refWatcher.watch(this);
+    }
+
     private void loadResource() {
         Resources res = getActivity().getResources();
-        bgColorNoSelect = res.getColor(R.color.light_grey_10);
-        bgColorSelected = res.getColor(R.color.light_grey_38);
-
-        order_submit_bg = res.getDrawable(R.drawable.state_new_background_480);
-        order_accept_bg = res.getDrawable(R.drawable.state_completed_background_480);
-        order_ip_bg = res.getDrawable(R.drawable.state_accepted_background_480);
+        mUnSelectBtnColor = res.getColor(R.color.light_grey_10);
+        mSelectedBtnColor = res.getColor(R.color.light_grey_38);
     }
 
     public void refreshOrderList(final boolean isSwipe) {
-        switch (orderMode) {
+        switch (mOrderMode) {
             case ALL:
                 OrderService.getAllLiteOrderList(app.getStoreId(), new UICallBack<LiteOrderList>() {
                     @Override
@@ -195,8 +215,7 @@ public class OrderFragment extends Fragment {
 
                     @Override
                     public void onPostExecute(LiteOrderList liteOrderList) {
-                        // refresh time stamp
-                        currentTimeStamp = System.currentTimeMillis();
+                        mLiteOrderList = liteOrderList;
                         // set order list
                         OrderFragment.this.mAdapter.updateOrder(liteOrderList);
                         if (isSwipe) {
@@ -215,7 +234,7 @@ public class OrderFragment extends Fragment {
                     @Override
                     public void onPostExecute(LiteOrderList liteOrderList) {
                         // refresh time stamp
-                        currentTimeStamp = System.currentTimeMillis();
+                        mLiteOrderList = liteOrderList;
 
                         // set order list
                         OrderFragment.this.mAdapter.updateOrder(liteOrderList);
@@ -234,8 +253,7 @@ public class OrderFragment extends Fragment {
 
                     @Override
                     public void onPostExecute(LiteOrderList liteOrderList) {
-                        // refresh time stamp
-                        currentTimeStamp = System.currentTimeMillis();
+                        mLiteOrderList = liteOrderList;
                         // set order list
                         OrderFragment.this.mAdapter.updateOrder(liteOrderList);
                         if (isSwipe) {
@@ -274,6 +292,11 @@ public class OrderFragment extends Fragment {
 
     class RecyclerViewAdapter extends RecyclerView.Adapter {
         private List<LiteOrder> orders = new ArrayList<>();
+        private Drawable submit_bg;
+        private Drawable accept_bg;
+        private Drawable ip_bg;
+        private int monkey;
+        private long currentTimeStamp;
 
         private class OrderViewHolder extends RecyclerView.ViewHolder {
             View card;
@@ -298,10 +321,16 @@ public class OrderFragment extends Fragment {
             }
         }
 
-        RecyclerViewAdapter(LiteOrderList listOrderList) {
-            if (listOrderList != null && !Utils.isEmpty(listOrderList.getOrders())) {
-                orders.addAll(listOrderList.getOrders());
+        RecyclerViewAdapter(LiteOrderList liteOrderList) {
+            if(liteOrderList != null && !Utils.isEmpty(liteOrderList.getOrders())) {
+                orders.addAll(liteOrderList.getOrders());
             }
+            Resources res = getResources();
+            submit_bg = res.getDrawable(R.drawable.state_new_background_480);
+            accept_bg = res.getDrawable(R.drawable.state_completed_background_480);
+            ip_bg = res.getDrawable(R.drawable.state_accepted_background_480);
+            monkey = res.getIdentifier("monkey", "drawable", getActivity().getPackageName());
+            currentTimeStamp = System.currentTimeMillis();
         }
 
         void updateOrder(LiteOrderList listOrderList) {
@@ -309,6 +338,7 @@ public class OrderFragment extends Fragment {
             if (listOrderList != null && !Utils.isEmpty(listOrderList.getOrders())) {
                 orders.addAll(listOrderList.getOrders());
             }
+            currentTimeStamp = System.currentTimeMillis();
             this.notifyDataSetChanged();
         }
 
@@ -323,7 +353,6 @@ public class OrderFragment extends Fragment {
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             final LiteOrder order = orders.get(position);
             Customer customer = order.getCustomer();
-            int id = getResources().getIdentifier("monkey", "drawable", getActivity().getPackageName());
 
             OrderViewHolder viewHolder = (OrderViewHolder) holder;
             if (customer != null) {
@@ -331,19 +360,19 @@ public class OrderFragment extends Fragment {
                 if (!TextUtils.isEmpty(customer.getProfilePic())) {
                     ImageLoader.loadImage(viewHolder.img, customer.getProfilePic());
                 } else {
-                    viewHolder.img.setImageResource(id);
+                    viewHolder.img.setImageResource(monkey);
                 }
             } else {
                 viewHolder.customerName.setText("Anonymous");
-                viewHolder.img.setImageResource(id);
+                viewHolder.img.setImageResource(monkey);
             }
             Drawable statusBg = null;
             if (order.getStatus().equals(Constants.SUB_ORDER_SUBMITTED)) {
-                statusBg = order_submit_bg;
+                statusBg = submit_bg;
             } else if (order.getStatus().equals(Constants.SUB_ORDER_IN_PROCESS)) {
-                statusBg = order_ip_bg;
+                statusBg = ip_bg;
             } else if (order.getStatus().equals(Constants.SUB_ORDER_ACCEPTED)) {
-                statusBg = order_accept_bg;
+                statusBg = accept_bg;
             }
             if (statusBg != null) {
                 viewHolder.orderStatusSection.setBackground(statusBg);
@@ -357,23 +386,21 @@ public class OrderFragment extends Fragment {
             try {
                 Date date = Utils.converterISO8601StringToDate(order.getCreatedTime());
                 long millis = currentTimeStamp - date.getTime();
-                waitingTimeString = String.format("%02d:%02d",
-                    TimeUnit.MILLISECONDS.toMinutes(millis),
-                    TimeUnit.MILLISECONDS.toSeconds(millis) -
-                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
-                );
+                waitingTimeString = Utils.formatMillis(millis);
             } catch (ParseException e) {
                 waitingTimeString = "N/A";
             }
 
-            viewHolder.time.setText("11:20");
+            viewHolder.time.setText(waitingTimeString);
             viewHolder.status.setText(order.getStatus());
 
             viewHolder.card.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    loadOrderDetails(order.getOrderId(), order.getSubId());
-
+                    if(orderClickable) {
+                        orderClickable = false;
+                        loadOrderDetails(order.getOrderId(), order.getSubId());
+                    }
                 }
             });
         }
@@ -385,18 +412,18 @@ public class OrderFragment extends Fragment {
     }
 
     private void setOrderBtnColor() {
-        ((GradientDrawable) mOrderAllBtn.getBackground()).setColor(bgColorNoSelect);
-        ((GradientDrawable) mOrderIPBtn.getBackground()).setColor(bgColorNoSelect);
-        ((GradientDrawable) mOrderSubmittedBtn.getBackground()).setColor(bgColorNoSelect);
-        switch (orderMode) {
+        ((GradientDrawable) mOrderAllBtn.getBackground()).setColor(mUnSelectBtnColor);
+        ((GradientDrawable) mOrderIPBtn.getBackground()).setColor(mUnSelectBtnColor);
+        ((GradientDrawable) mOrderSubmittedBtn.getBackground()).setColor(mUnSelectBtnColor);
+        switch (mOrderMode) {
             case ALL:
-                ((GradientDrawable) mOrderAllBtn.getBackground()).setColor(bgColorSelected);
+                ((GradientDrawable) mOrderAllBtn.getBackground()).setColor(mSelectedBtnColor);
                 break;
             case SUBMITTED:
-                ((GradientDrawable) mOrderSubmittedBtn.getBackground()).setColor(bgColorSelected);
+                ((GradientDrawable) mOrderSubmittedBtn.getBackground()).setColor(mSelectedBtnColor);
                 break;
             case INPROCESS:
-                ((GradientDrawable) mOrderIPBtn.getBackground()).setColor(bgColorSelected);
+                ((GradientDrawable) mOrderIPBtn.getBackground()).setColor(mSelectedBtnColor);
                 break;
         }
     }
@@ -419,20 +446,22 @@ public class OrderFragment extends Fragment {
             public void onPostExecute(Order order) {
                 //notifyActivity(Constants.HIDE_LOADING);
                 //startOrderDetailsActivity(order);
-                if (!app.getUser().getUserId().equals(order.getLiteOrder().getOperator()) && order.getLiteOrder().getStatus().equals("IN_PROCESS")) {
+                if (!app.getUser().getUserId().equals(order.getLiteOrder().getOperator()) && order.getLiteOrder().getStatus().equals(Constants.SUB_ORDER_IN_PROCESS)) {
                     Toast.makeText(getActivity().getApplicationContext(), "This order is already in process",
                         Toast.LENGTH_SHORT).show();
+                    orderClickable = true;
                 } else if (order.getLiteOrder().getStatus().equals(Constants.SUB_ORDER_SUBMITTED)) {
-                    lockOrderDetails(orderId, subOrderId, order);
+                    lockOrder(orderId, subOrderId, order);
                 } else {
                     notifyActivity(Constants.HIDE_LOADING);
                     startOrderDetailsActivity(order);
+                    orderClickable = true;
                 }
             }
         }, app);
     }
 
-    private void lockOrderDetails(String orderId, String subOrderId, final Order order) {
+    private void lockOrder(String orderId, String subOrderId, final Order order) {
         OrderService.lockOrder(orderId, subOrderId, app.getUser().getUserId(), true, new UICallBack<Boolean>() {
             @Override
             public void onPreExecute() {
@@ -442,11 +471,13 @@ public class OrderFragment extends Fragment {
             public void onPostExecute(Boolean response) {
                 if (response != null && response == Boolean.TRUE) {
                     notifyActivity(Constants.HIDE_LOADING);
+                    order.getLiteOrder().setStatus("IN_PROCESS");
                     startOrderDetailsActivity(order);
                 } else {
                     Toast.makeText(getActivity().getApplicationContext(), "Cannot lock this order",
                         Toast.LENGTH_SHORT).show();
                 }
+                orderClickable = true;
             }
         }, app);
     }
@@ -457,6 +488,4 @@ public class OrderFragment extends Fragment {
             refreshOrderList(true);
         }
     }
-
-
 }

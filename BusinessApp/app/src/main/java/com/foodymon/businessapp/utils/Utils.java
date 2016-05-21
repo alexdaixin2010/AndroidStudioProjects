@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by alexdai on 4/8/16.
@@ -132,11 +133,25 @@ public class Utils {
         return builder.toString();
     }
 
-    /**
-     * convert rgb color to int , for example 0xFFFFFFFF
-     */
-    public static int getRGBColor(int color) {
-        return Color.argb(0, Color.red(color), Color.green(color), Color.blue(color));
+
+    public static String formatMillis(long millis) {
+        long millisTime = millis;
+
+        long days = TimeUnit.MILLISECONDS.toDays(millis);
+        millis -= TimeUnit.DAYS.toMillis(days);
+        long hours = TimeUnit.MILLISECONDS.toHours(millis);
+        millis -= TimeUnit.HOURS.toMillis(hours);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
+        millis -= TimeUnit.MINUTES.toMillis(minutes);
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
+        if(millisTime > 86400000) { //1000*60*60*24
+            return String.format("%d day", days);
+        }
+        else if(millisTime > 3600000) { //1000*60*60
+            return String.format("%d hour", hours);
+        } else {
+            return String.format("%02d:%02d",minutes, seconds);
+        }
     }
 
 
