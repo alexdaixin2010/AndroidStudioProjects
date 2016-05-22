@@ -43,6 +43,10 @@ public class PaymentService {
         }).execute(null);
     }
 
+    public static void getPaidRequestList(String storeId, final UICallBack<LitePaymentList> callBack, BusinessApplication app) {
+        getPaymentList(storeId, Constants.ORDER_REQUEST_PAY, callBack, app);
+    }
+
     public static void getPaidList(String storeId, final UICallBack<LitePaymentList> callBack, BusinessApplication app) {
         getPaymentList(storeId, Constants.ORDER_PAID, callBack, app);
     }

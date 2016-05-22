@@ -29,10 +29,10 @@
                 android:textSize="@dimen/order_card_title_font"/>
 
             <TextView
-                android:id="@+id/pay_btn_paid"
+                android:id="@+id/pay_btn_request"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Paid"
+                android:text="Request"
                 android:paddingLeft="@dimen/button_side_padding"
                 android:paddingRight="@dimen/button_side_padding"
                 android:paddingTop="@dimen/button_top_padding"
@@ -42,10 +42,10 @@
                 android:textSize="@dimen/order_card_title_font"/>
 
             <TextView
-                android:id="@+id/pay_btn_unpaid"
+                android:id="@+id/pay_btn_paid"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="UnPaid"
+                android:text="Paid"
                 android:paddingLeft="@dimen/button_side_padding"
                 android:paddingRight="@dimen/button_side_padding"
                 android:paddingTop="@dimen/button_top_padding"

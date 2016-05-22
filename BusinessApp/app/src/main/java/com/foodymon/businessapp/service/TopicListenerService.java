@@ -26,7 +26,6 @@ public class TopicListenerService extends GcmListenerService {
             // normal downstream message.
         }
 
-
         // app is in foreground, broadcast the push message
         Intent pushNotification = new Intent(Constants.ORDER_UPDATE);
         pushNotification.putExtra("message", message);

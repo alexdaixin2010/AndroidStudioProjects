@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.foodymon.businessapp.R;
 import com.foodymon.businessapp.constant.Constants;
@@ -51,7 +50,7 @@ public class PaymentFragment extends Fragment  {
     private GridLayoutManager mGridLayoutManager;
     private TextView mAllBtn;
     private TextView mPaidBtn;
-    private TextView mUnPaidBtn;
+    private TextView mRequestPayBtn;
     private LitePaymentList mPaymentList;
 
     int mUnSelectBtnColor;
@@ -61,9 +60,9 @@ public class PaymentFragment extends Fragment  {
     enum PAY_MODE {
         ALL,
         PAID,
-        UNPAID,
+        REQUEST,
     }
-    private PAY_MODE mPayMode = PAY_MODE.PAID;
+    private PAY_MODE mPayMode = PAY_MODE.REQUEST;
 
     private BusinessApplication app;
 
@@ -108,7 +107,7 @@ public class PaymentFragment extends Fragment  {
 
         mAllBtn = (TextView)view.findViewById(R.id.pay_btn_all);
         mPaidBtn = (TextView)view.findViewById(R.id.pay_btn_paid);
-        mUnPaidBtn = (TextView)view.findViewById(R.id.pay_btn_unpaid);
+        mRequestPayBtn = (TextView)view.findViewById(R.id.pay_btn_request);
 
         setPayBtnColor();
 
@@ -137,13 +136,13 @@ public class PaymentFragment extends Fragment  {
                 return true;
             }
         });
-        mUnPaidBtn.setOnTouchListener(new View.OnTouchListener() {
+        mRequestPayBtn.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(mPayMode == PAY_MODE.UNPAID){
+                if(mPayMode == PAY_MODE.REQUEST){
                     return false;
                 }
-                mPayMode = PAY_MODE.UNPAID;
+                mPayMode = PAY_MODE.REQUEST;
                 setPayBtnColor();
                 refreshPaymentList(false);
                 return true;
@@ -240,7 +239,7 @@ public class PaymentFragment extends Fragment  {
                     }
                 }, app);
                 break;
-            case UNPAID:
+            case REQUEST:
                 PaymentService.getUnPaidList(app.getStoreId(), new UICallBack<LitePaymentList>() {
                     @Override
                     public void onPreExecute() {
@@ -411,7 +410,7 @@ public class PaymentFragment extends Fragment  {
 
     private void setPayBtnColor() {
         ((GradientDrawable) mAllBtn.getBackground()).setColor(mUnSelectBtnColor);
-        ((GradientDrawable) mUnPaidBtn.getBackground()).setColor(mUnSelectBtnColor);
+        ((GradientDrawable) mRequestPayBtn.getBackground()).setColor(mUnSelectBtnColor);
         ((GradientDrawable) mPaidBtn.getBackground()).setColor(mUnSelectBtnColor);
         switch (mPayMode) {
             case ALL:
@@ -420,8 +419,8 @@ public class PaymentFragment extends Fragment  {
             case PAID:
                 ((GradientDrawable) mPaidBtn.getBackground()).setColor(mSelectedBtnColor);
                 break;
-            case UNPAID:
-                ((GradientDrawable) mUnPaidBtn.getBackground()).setColor(mSelectedBtnColor);
+            case REQUEST:
+                ((GradientDrawable) mRequestPayBtn.getBackground()).setColor(mSelectedBtnColor);
                 break;
         }
     }

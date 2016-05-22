@@ -64,6 +64,18 @@
             android:text="Payments"
             android:textSize="15dp"
             android:textColor="@color/button_grey"/>
+
+        <TextView
+            android:id="@+id/pay_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:text="1"
+            android:textColor="#FFF"
+            android:textSize="10dp"
+            android:textStyle="bold"
+            android:visibility="invisible"
+            android:background="@drawable/badge_circle"/>
     </LinearLayout>
 
     <LinearLayout

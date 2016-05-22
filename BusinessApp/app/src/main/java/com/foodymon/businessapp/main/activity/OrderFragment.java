@@ -443,12 +443,12 @@ public class OrderFragment extends Fragment {
             @Override
             public void onPostExecute(Order order) {
                 if (order != null) {
-                    notifyActivity(Constants.HIDE_LOADING);
                     startOrderDetailsActivity(order);
                 } else {
                     Toast.makeText(getActivity().getApplicationContext(), "Cannot lock this order",
                         Toast.LENGTH_SHORT).show();
                 }
+                notifyActivity(Constants.HIDE_LOADING);
                 orderClickable = true;
             }
         }, app);
