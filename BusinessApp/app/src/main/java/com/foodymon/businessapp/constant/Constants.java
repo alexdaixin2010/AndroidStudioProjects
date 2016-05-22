@@ -54,6 +54,7 @@ public class Constants {
 
     /* Order status */
     public static final String ORDER_UNPAID = "UNPAID";
+    public static final String ORDER_PAID = "PAID";
 
     public static final String SUB_ORDER_SUBMITTED = "SUBMITTED";
     public static final String SUB_ORDER_IN_PROCESS = "IN_PROCESS";

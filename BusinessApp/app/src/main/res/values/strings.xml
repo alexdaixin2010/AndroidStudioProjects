@@ -29,6 +29,7 @@
 
     <!--order card-->
     <string name="customer">Customer</string>
+    <string name="orderType">Order Type</string>
 
 
 

@@ -20,11 +20,12 @@ import com.foodymon.businessapp.main.BusinessApplication;
 import com.foodymon.businessapp.datastructure.StoreStaff;
 import com.foodymon.businessapp.service.LoginService;
 import com.foodymon.businessapp.service.OrderService;
+import com.foodymon.businessapp.service.TopicRegistrationService;
 import com.foodymon.businessapp.service.UICallBack;
 import com.foodymon.businessapp.utils.Utils;
 
 import android.support.v4.content.LocalBroadcastManager;
-
+import android.widget.Toast;
 
 
 /**
@@ -85,7 +86,13 @@ public class LoginActivity extends Activity{
                         if (Utils.isValidUser(user)) {
                             app.setStoreId(storeId);
                             app.setUser(user);
-                            LoginService.registerGCM(LoginActivity.this, app.getOrderTopicHeader());
+                            if (Utils.checkPlayServices(LoginActivity.this)) {
+                                LoginService.registerGCM(LoginActivity.this, app.getOrderTopicHeader());
+                            } else {
+                                subscriptionDone = true;
+                                Toast.makeText(LoginActivity.this.getApplicationContext(), "subscribe error, need google play service",
+                                    Toast.LENGTH_SHORT).show();
+                            }
                             loadOrderList(storeId, userName);
                         } else {
                             invalid.setVisibility(View.VISIBLE);

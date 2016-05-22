@@ -27,11 +27,16 @@
             android:paddingLeft="@dimen/order_card_section_padding"
             android:paddingTop="@dimen/order_card_section_padding">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="@dimen/order_card_section_item_padding">
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="@dimen/order_card_section_item_padding">
+                    android:layout_weight="0.5"
+                    android:orientation="vertical">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -48,6 +53,32 @@
                         android:textColor="@color/black_99"
                         android:textSize="@dimen/order_card_subtitle_font"/>
                 </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="@dimen/order_card_section_padding"
+                    android:layout_weight="0.5"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/orderType"
+                        android:gravity="end"
+                        android:textColor="@color/light_grey_22"
+                        android:textSize="@dimen/order_card_title_font"/>
+
+                    <TextView
+                        android:id="@+id/order_detail_order_type"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:text="Dine in"
+                        android:textColor="@color/black_99"
+                        android:textSize="@dimen/order_card_subtitle_font"/>
+                </LinearLayout>
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -191,6 +222,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/order_detail_btn_section"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/order_detail_btn_margin_top" >

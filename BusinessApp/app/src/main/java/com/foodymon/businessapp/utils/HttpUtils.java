@@ -53,6 +53,10 @@ public class HttpUtils {
             int statusCode = urlConnection.getResponseCode();
             /* 200 represents HTTP OK */
             if (statusCode == 200) {
+                Map<String, List<String>> headers = urlConnection.getHeaderFields();
+                if (!Utils.isEmpty(headers)) {
+                    updateToken(headers, app);
+                }
                 in = new BufferedInputStream(urlConnection.getInputStream());
                 Reader reader = new InputStreamReader(in);
                 if (clazz != null) {
@@ -122,14 +126,15 @@ public class HttpUtils {
             out.flush();
             out.close();
 
-            Map<String, List<String>> headers = urlConnection.getHeaderFields();
-            if (!Utils.isEmpty(headers) && responseHeader != null) {
-                responseHeader.putAll(headers);
-            }
-
-
             int statusCode = urlConnection.getResponseCode();
             if (statusCode == 200) {
+                Map<String, List<String>> headers = urlConnection.getHeaderFields();
+                if (!Utils.isEmpty(headers) && responseHeader != null) {
+                    responseHeader.putAll(headers);
+
+                    updateToken(headers, app);
+                }
+
                 in = new BufferedInputStream(urlConnection.getInputStream());
                 Reader reader = new InputStreamReader(in);
                 if (clazz == Boolean.class) {
@@ -182,6 +187,15 @@ public class HttpUtils {
 
     public static void postByUrl() {
 
+    }
+
+    private static void updateToken(Map<String, List<String>> headers, BusinessApplication app) {
+        if(headers.containsKey("Authorization")) {
+            String token = headers.get("Authorization").get(0);
+            if(!app.getToken().equals(token)) {
+                app.setToken(token);
+            }
+        }
     }
 
     private static String getAbsoluteUrl(String relativeUrl, String params) {

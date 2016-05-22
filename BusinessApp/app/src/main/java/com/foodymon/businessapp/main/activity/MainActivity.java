@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
@@ -28,7 +29,7 @@ import com.foodymon.businessapp.service.UICallBack;
 //import com.squareup.leakcanary.RefWatcher;
 
 public class MainActivity extends AppCompatActivity
-    implements NavigationView.OnNavigationItemSelectedListener, OrderFragment.OnFragmentInteractionListener {
+    implements NavigationView.OnNavigationItemSelectedListener, OrderFragment.OnFragmentInteractionListener, PaymentFragment.OnFragmentInteractionListener {
 
     private ViewGroup nav_order;
     private ViewGroup nav_pay;
@@ -48,6 +49,8 @@ public class MainActivity extends AppCompatActivity
     private ProgressBar loading;
 
     private OrderFragment orderFragment;
+    private PaymentFragment payFragment;
+    private Fragment currentFragment;
 
     private BroadcastReceiver mRegistrationBroadcastReceiver;
 
@@ -144,7 +147,7 @@ public class MainActivity extends AppCompatActivity
             case 1:
                 selectedTab = nav_order;
                 nav_order.setBackgroundColor(TAB_SELECTED);
-                replaceOrderFragment(fm, transaction, R.id.id_content);
+                replaceOrderFragment(fm, transaction, R.id.fragment_content);
                 break;
             case 2:
                 selectedTab = nav_pay;
@@ -266,7 +269,19 @@ public class MainActivity extends AppCompatActivity
                 orderFragment = OrderFragment.newInstance();
             }
         }
+        currentFragment = orderFragment;
         transaction.replace(id, orderFragment, "order");
+    }
+
+    private void replacePayFragment(FragmentManager fm, FragmentTransaction transaction, int id) {
+        if (payFragment == null) {
+            payFragment = (PaymentFragment) fm.findFragmentByTag("pay");
+            if (payFragment == null) {
+                payFragment = PaymentFragment.newInstance();
+            }
+        }
+        currentFragment = payFragment;
+        transaction.replace(id, payFragment, "pay");
     }
 
     class BottomNavListener implements View.OnClickListener {
@@ -285,7 +300,7 @@ public class MainActivity extends AppCompatActivity
                     selectedTab.setBackground(null);
                     nav_order.setBackgroundColor(TAB_SELECTED);
                     selectedTab = nav_order;
-                    replaceOrderFragment(fm, transaction, R.id.id_content);
+                    replaceOrderFragment(fm, transaction, R.id.fragment_content);
                     break;
                 case R.id.nav_pay:
                     //    nav_iv_order.setImageResource(R.drawable.nav_pay_pressed);
@@ -293,7 +308,7 @@ public class MainActivity extends AppCompatActivity
                     selectedTab.setBackground(null);
                     nav_pay.setBackgroundColor(TAB_SELECTED);
                     selectedTab = nav_pay;
-                    transaction.remove(orderFragment);
+                    replacePayFragment(fm, transaction, R.id.fragment_content);
                     break;
                 case R.id.nav_customer:
                     //    nav_iv_order.setImageResource(R.drawable.nav_takeout_pressed);
@@ -301,7 +316,7 @@ public class MainActivity extends AppCompatActivity
                     selectedTab.setBackground(null);
                     nav_customer.setBackgroundColor(TAB_SELECTED);
                     selectedTab = nav_customer;
-                    transaction.remove(orderFragment);
+                    transaction.remove(currentFragment);
                     break;
                 case R.id.nav_dashboard:
                     //    nav_iv_order.setImageResource(R.drawable.nav_user_pressed);
@@ -309,7 +324,7 @@ public class MainActivity extends AppCompatActivity
                     selectedTab.setBackground(null);
                     nav_dashboard.setBackgroundColor(TAB_SELECTED);
                     selectedTab = nav_dashboard;
-                    transaction.remove(orderFragment);
+                    transaction.remove(currentFragment);
                     break;
             }
             transaction.commit();

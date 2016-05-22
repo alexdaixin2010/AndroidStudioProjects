@@ -9,7 +9,7 @@
               android:paddingRight="@dimen/order_card_side_padding"
               android:paddingTop="@dimen/order_card_top_padding">
 
-    <android.support.v7.widget.CardView android:id="@+id/order_card"
+    <android.support.v7.widget.CardView android:id="@+id/pay_card"
                                         xmlns:card_view="http://schemas.android.com/apk/res-auto"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
@@ -26,58 +26,58 @@
             android:paddingLeft="@dimen/order_card_section_padding"
             android:paddingTop="@dimen/order_card_section_padding">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="@dimen/order_card_section_item_padding">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/customer"
-                    android:textColor="@color/light_grey_22"
-                    android:textSize="@dimen/order_card_title_font"/>
-
-                <TextView
-                    android:id="@+id/order_customer_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="MaryJone"
-                    android:textColor="@color/black_99"
-                    android:textSize="@dimen/order_card_subtitle_font"/>
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingRight="@dimen/order_card_section_padding"
-                android:layout_weight="0.5"
-                android:orientation="vertical">
-
-                <TextView
+                android:orientation="horizontal"
+                android:padding="@dimen/order_card_section_item_padding">
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/orderType"
-                    android:gravity="end"
-                    android:textColor="@color/light_grey_22"
-                    android:textSize="@dimen/order_card_title_font"/>
+                    android:layout_weight="0.5"
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/order_order_type"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/customer"
+                        android:textColor="@color/light_grey_22"
+                        android:textSize="@dimen/order_card_title_font"/>
+
+                    <TextView
+                        android:id="@+id/pay_customer_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="MaryJone"
+                        android:textColor="@color/black_99"
+                        android:textSize="@dimen/order_card_subtitle_font"/>
+                </LinearLayout>
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="end"
-                    android:text="Dine in"
-                    android:textColor="@color/black_99"
-                    android:textSize="@dimen/order_card_subtitle_font"/>
-            </LinearLayout>
+                    android:paddingRight="@dimen/order_card_section_padding"
+                    android:layout_weight="0.5"
+                    android:orientation="vertical">
 
-        </LinearLayout>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/orderType"
+                        android:gravity="end"
+                        android:textColor="@color/light_grey_22"
+                        android:textSize="@dimen/order_card_title_font"/>
+
+                    <TextView
+                        android:id="@+id/pay_order_type"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:text="Dine in"
+                        android:textColor="@color/black_99"
+                        android:textSize="@dimen/order_card_subtitle_font"/>
+                </LinearLayout>
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -100,7 +100,7 @@
                         android:textSize="@dimen/order_card_title_font"/>
 
                     <TextView
-                        android:id="@+id/order_time"
+                        android:id="@+id/pay_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="1:12"
@@ -109,7 +109,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/order_status_section"
+                    android:id="@+id/pay_status_section"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/order_card_status_section_height"
                     android:layout_marginLeft="@dimen/order_card_status_margin_left"
@@ -121,7 +121,7 @@
                         android:padding="@dimen/order_card_section_item_padding">
 
                         <com.foodymon.businessapp.main.view.CircleImageView
-                            android:id="@+id/order_user_img"
+                            android:id="@+id/pay_user_img"
                             android:layout_width="@dimen/order_card_user_img_size"
                             android:layout_height="@dimen/order_card_user_img_size"
 
@@ -148,13 +148,74 @@
                             android:textSize="@dimen/order_card_title_font"/>
 
                         <TextView
-                            android:id="@+id/order_table"
+                            android:id="@+id/pay_table"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="12"
                             android:textColor="@color/black_99"
                             android:textSize="@dimen/order_card_subtitle_large_font"/>
                     </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:orientation="vertical"
+                    android:padding="@dimen/order_card_section_item_padding">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Total Amount"
+                        android:textColor="@color/light_grey_22"
+                        android:textSize="@dimen/order_card_title_font"/>
+
+                    <TextView
+                        android:id="@+id/pay_total"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="$12.34"
+                        android:textColor="@color/black_99"
+                        android:textSize="@dimen/order_card_subtitle_font"/>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="2dp"
+                    android:layout_height="fill_parent"
+                    android:layout_marginTop="@dimen/order_card_section_item_padding"
+                    android:background="@color/light_grey_22"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:orientation="vertical"
+                    android:paddingBottom="@dimen/order_card_section_item_padding"
+                    android:paddingLeft="@dimen/order_card_section_item_extra_padding"
+                    android:paddingRight="@dimen/order_card_section_item_extra_padding"
+                    android:paddingTop="@dimen/order_card_section_item_padding">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tips"
+                        android:textColor="@color/light_grey_22"
+                        android:textSize="@dimen/order_card_title_font"/>
+
+                    <TextView
+                        android:id="@+id/pay_tip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="$12.2"
+                        android:textColor="@color/black_99"
+                        android:textSize="@dimen/order_card_subtitle_font"/>
                 </LinearLayout>
             </LinearLayout>
 
@@ -179,7 +240,7 @@
                         android:textSize="@dimen/order_card_title_font"/>
 
                     <TextView
-                        android:id="@+id/order_id"
+                        android:id="@+id/pay_id"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="1231321"
@@ -211,7 +272,7 @@
                         android:textSize="@dimen/order_card_title_font"/>
 
                     <TextView
-                        android:id="@+id/order_status"
+                        android:id="@+id/pay_status"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Pendding"

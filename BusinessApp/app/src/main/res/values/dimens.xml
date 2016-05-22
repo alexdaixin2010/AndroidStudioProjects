@@ -43,7 +43,7 @@
     <dimen name="order_detail_card_side_padding">5dp</dimen>
     <dimen name="order_detail_item_margin">10dp</dimen>
 
-    <dimen name="order_detaill_item_title_font">18dp</dimen>
-    <dimen name="order_detaill_item_categoryt_font">8dp</dimen>
-    <dimen name="order_detaill_item_remove_button_size">20dp</dimen>
+    <dimen name="order_detail_item_title_font">18dp</dimen>
+    <dimen name="order_detail_item_categoryt_font">8dp</dimen>
+    <dimen name="order_detail_item_remove_button_size">20dp</dimen>
 </resources>

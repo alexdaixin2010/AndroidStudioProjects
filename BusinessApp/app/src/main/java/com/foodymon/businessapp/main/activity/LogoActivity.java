@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
+import android.widget.Toast;
 
 import com.foodymon.businessapp.R;
 import com.foodymon.businessapp.constant.Constants;
@@ -83,7 +84,13 @@ public class LogoActivity extends Activity {
                         app.setStoreId(storeId);
                         app.setUser(user);
                         app.setToken(token);
-                        LoginService.registerGCM(LogoActivity.this, app.getOrderTopicHeader());
+                        if (Utils.checkPlayServices(LogoActivity.this)) {
+                            LoginService.registerGCM(LogoActivity.this, app.getOrderTopicHeader());
+                        } else {
+                            subscriptionDone = true;
+                            Toast.makeText(LogoActivity.this.getApplicationContext(), "subscribe error, need google play service",
+                                Toast.LENGTH_SHORT).show();
+                        }
                         loadOrderList(storeId, userName);
                     } else {
                         authenticate(storeId, userName, password);
@@ -118,7 +125,14 @@ public class LogoActivity extends Activity {
                 if (Utils.isValidUser(user)) {
                     app.setStoreId(storeId);
                     app.setUser(user);
-                    LoginService.registerGCM(LogoActivity.this, app.getOrderTopicHeader());
+                    if (Utils.checkPlayServices(LogoActivity.this)) {
+                        LoginService.registerGCM(LogoActivity.this, app.getOrderTopicHeader());
+                    } else {
+                        subscriptionDone = true;
+                        Toast.makeText(LogoActivity.this.getApplicationContext(), "subscribe error, need google play service",
+                            Toast.LENGTH_SHORT).show();
+                    }
+
                     loadOrderList(storeId, userName);
                 } else {
                     startLoginActivity();

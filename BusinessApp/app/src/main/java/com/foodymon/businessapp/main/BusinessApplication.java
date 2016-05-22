@@ -13,7 +13,7 @@ import com.foodymon.businessapp.datastructure.StoreStaff;
 public class BusinessApplication extends Application {
     private StoreStaff user;
     private String storeId;
-    private String token;
+    private String token = "";
 
 //    private RefWatcher refWatcher;
 

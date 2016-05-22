@@ -64,12 +64,14 @@ public class OrderDetailsActivity extends AppCompatActivity {
         TextView time = (TextView) findViewById(R.id.order_detail_time);
         TextView status = (TextView) findViewById(R.id.order_detail_status);
         TextView name = (TextView) findViewById(R.id.order_detail_customer_name);
+        TextView type = (TextView) findViewById(R.id.order_detail_order_type) ;
         LinearLayout orderStatusSection = (LinearLayout) findViewById(R.id.order_detail_status_section);
         CircleImageView imageView = (CircleImageView) findViewById(R.id.order_detail_user_img);
 
         LiteOrder liteOrder = order.getLiteOrder();
         Customer customer = liteOrder.getCustomer();
 
+        type.setText(liteOrder.getOrderType());
         orderId.setText(liteOrder.getOrderId() + "/" + liteOrder.getSubId());
         table.setText(liteOrder.getTable());
 
@@ -108,10 +110,9 @@ public class OrderDetailsActivity extends AppCompatActivity {
         if (statusBg != null) {
             orderStatusSection.setBackground(statusBg);
         }
-
-        CircleImageView confirmBtn = (CircleImageView) findViewById(R.id.order_detail_accept_button);
-        CircleImageView rejectBtn = (CircleImageView) findViewById(R.id.order_detail_reject_button);
         if (isOrderEditable()) {
+            CircleImageView confirmBtn = (CircleImageView) findViewById(R.id.order_detail_accept_button);
+            CircleImageView rejectBtn = (CircleImageView) findViewById(R.id.order_detail_reject_button);
             confirmBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -125,8 +126,8 @@ public class OrderDetailsActivity extends AppCompatActivity {
                 }
             });
         } else {
-            confirmBtn.setVisibility(View.GONE);
-            rejectBtn.setVisibility(View.GONE);
+            LinearLayout btnSection = (LinearLayout) findViewById(R.id.order_detail_btn_section);
+            btnSection.setVisibility(View.GONE);
         }
 
 
@@ -255,7 +256,7 @@ public class OrderDetailsActivity extends AppCompatActivity {
     }
 
     private void unLockOrder(String orderId, String subOrderId) {
-        OrderService.lockOrder(orderId, subOrderId, app.getUser().getUserId(), false, new UICallBack<Boolean>() {
+        OrderService.unLockOrder(orderId, subOrderId, app.getUser().getUserId(), new UICallBack<Boolean>() {
             @Override
             public void onPreExecute() {
             }

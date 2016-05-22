@@ -23,55 +23,56 @@ import android.widget.Toast;
 import com.foodymon.businessapp.R;
 import com.foodymon.businessapp.constant.Constants;
 import com.foodymon.businessapp.datastructure.Customer;
-import com.foodymon.businessapp.datastructure.LiteOrder;
-import com.foodymon.businessapp.datastructure.LiteOrderList;
+import com.foodymon.businessapp.datastructure.LitePayment;
+import com.foodymon.businessapp.datastructure.LitePaymentList;
 import com.foodymon.businessapp.datastructure.Order;
+import com.foodymon.businessapp.datastructure.Payment;
 import com.foodymon.businessapp.main.BusinessApplication;
 import com.foodymon.businessapp.main.view.CircleImageView;
-import com.foodymon.businessapp.service.OrderService;
+import com.foodymon.businessapp.service.PaymentService;
 import com.foodymon.businessapp.service.UICallBack;
 import com.foodymon.businessapp.utils.ImageLoader;
 import com.foodymon.businessapp.utils.Utils;
-//import com.squareup.leakcanary.RefWatcher;
 
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Created by alexdai on 5/21/16.
+ */
+public class PaymentFragment extends Fragment  {
 
-public class OrderFragment extends Fragment {
-
-    private OnFragmentInteractionListener mListener;
+    private PaymentFragment.OnFragmentInteractionListener mListener;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
     private RecyclerViewAdapter mAdapter;
     private GridLayoutManager mGridLayoutManager;
-    private TextView mOrderAllBtn;
-    private TextView mOrderSubmittedBtn;
-    private TextView mOrderIPBtn;
-    private LiteOrderList mLiteOrderList;
+    private TextView mAllBtn;
+    private TextView mPaidBtn;
+    private TextView mUnPaidBtn;
+    private LitePaymentList mPaymentList;
 
     int mUnSelectBtnColor;
     int mSelectedBtnColor;
-    boolean orderClickable = true;
+    boolean cardClickable = true;
 
-    private ORDER_MODE mOrderMode = ORDER_MODE.SUBMITTED;
-
-    enum ORDER_MODE {
+    enum PAY_MODE {
         ALL,
-        SUBMITTED,
-        INPROCESS,
+        PAID,
+        UNPAID,
     }
+    private PAY_MODE mPayMode = PAY_MODE.PAID;
 
     private BusinessApplication app;
 
-    public static OrderFragment newInstance() {
-        OrderFragment fragment = new OrderFragment();
+    public static PaymentFragment newInstance() {
+        PaymentFragment fragment = new PaymentFragment();
         return fragment;
     }
 
-    public OrderFragment() {
+    public PaymentFragment() {
         // Required empty public constructor
     }
 
@@ -88,13 +89,13 @@ public class OrderFragment extends Fragment {
         loadResource();
 
         if(savedInstanceState != null) {
-            mLiteOrderList = savedInstanceState.getParcelable(LiteOrderList.BUNDLE_NAME);
-            mOrderMode = ORDER_MODE.valueOf(savedInstanceState.getString("orderMode"));
+            mPaymentList = savedInstanceState.getParcelable(LitePaymentList.BUNDLE_NAME);
+            mPayMode = PAY_MODE.valueOf(savedInstanceState.getString("payMode"));
         }
 
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_order, container, false);
-        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.order_swipeRefreshLayout);
+        View view = inflater.inflate(R.layout.fragment_pay, container, false);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.pay_swipeRefreshLayout);
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshListener());
 
@@ -105,46 +106,46 @@ public class OrderFragment extends Fragment {
 
         mRecyclerView.setBackgroundColor(Color.argb(230, 255, 255, 255));
 
-        mOrderAllBtn = (TextView)view.findViewById(R.id.order_btn_all);
-        mOrderSubmittedBtn = (TextView)view.findViewById(R.id.order_btn_submit);
-        mOrderIPBtn = (TextView)view.findViewById(R.id.order_btn_ip);
+        mAllBtn = (TextView)view.findViewById(R.id.pay_btn_all);
+        mPaidBtn = (TextView)view.findViewById(R.id.pay_btn_paid);
+        mUnPaidBtn = (TextView)view.findViewById(R.id.pay_btn_unpaid);
 
-        setOrderBtnColor();
+        setPayBtnColor();
 
-        mOrderAllBtn.setOnTouchListener(new View.OnTouchListener() {
+        mAllBtn.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(mOrderMode == ORDER_MODE.ALL){
+                if(mPayMode == PAY_MODE.ALL){
                     return false;
                 }
-                mOrderMode = ORDER_MODE.ALL;
-                setOrderBtnColor();
-                refreshOrderList(false);
+                mPayMode = PAY_MODE.ALL;
+                setPayBtnColor();
+                refreshPaymentList(false);
                 return true;
             }
         });
 
-        mOrderSubmittedBtn.setOnTouchListener(new View.OnTouchListener() {
+        mPaidBtn.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(mOrderMode == ORDER_MODE.SUBMITTED){
+                if(mPayMode == PAY_MODE.PAID){
                     return false;
                 }
-                mOrderMode = ORDER_MODE.SUBMITTED;
-                setOrderBtnColor();
-                refreshOrderList(false);
+                mPayMode = PAY_MODE.PAID;
+                setPayBtnColor();
+                refreshPaymentList(false);
                 return true;
             }
         });
-        mOrderIPBtn.setOnTouchListener(new View.OnTouchListener() {
+        mUnPaidBtn.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(mOrderMode == ORDER_MODE.INPROCESS){
+                if(mPayMode == PAY_MODE.UNPAID){
                     return false;
                 }
-                mOrderMode = ORDER_MODE.INPROCESS;
-                setOrderBtnColor();
-                refreshOrderList(false);
+                mPayMode = PAY_MODE.UNPAID;
+                setPayBtnColor();
+                refreshPaymentList(false);
                 return true;
             }
         });
@@ -155,19 +156,19 @@ public class OrderFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (mLiteOrderList == null ) {
-            mLiteOrderList = getActivity().getIntent()
-                .getParcelableExtra(LiteOrderList.BUNDLE_NAME);
+        if (mPaymentList == null ) {
+            mPaymentList = getActivity().getIntent()
+                .getParcelableExtra(LitePaymentList.BUNDLE_NAME);
         }
-        mAdapter = new RecyclerViewAdapter(mLiteOrderList);
+        mAdapter = new RecyclerViewAdapter(mPaymentList);
         mRecyclerView.setAdapter(mAdapter);
     }
 
     @Override
     public void onSaveInstanceState(Bundle state) {
         super.onSaveInstanceState(state);
-        state.putString("orderMode", mOrderMode.toString());
-        state.putParcelable(LiteOrderList.BUNDLE_NAME, mLiteOrderList);
+        state.putString("payMode", mPayMode.toString());
+        state.putParcelable(LitePaymentList.BUNDLE_NAME, mPaymentList);
     }
 
     @Override
@@ -188,8 +189,8 @@ public class OrderFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         mRecyclerView.setAdapter(null);
-    //    RefWatcher refWatcher = BusinessApplication.getRefWatcher(getActivity());
-     //   refWatcher.watch(this);
+        //    RefWatcher refWatcher = BusinessApplication.getRefWatcher(getActivity());
+        //   refWatcher.watch(this);
     }
 
     private void loadResource() {
@@ -198,20 +199,20 @@ public class OrderFragment extends Fragment {
         mSelectedBtnColor = res.getColor(R.color.light_grey_38);
     }
 
-    public void refreshOrderList(final boolean isSwipe) {
-        switch (mOrderMode) {
+    public void refreshPaymentList(final boolean isSwipe) {
+        switch (mPayMode) {
             case ALL:
-                OrderService.getAllLiteOrderList(app.getStoreId(), new UICallBack<LiteOrderList>() {
+                PaymentService.getAllLiteOrderList(app.getStoreId(), new UICallBack<LitePaymentList>() {
                     @Override
                     public void onPreExecute() {
 
                     }
 
                     @Override
-                    public void onPostExecute(LiteOrderList liteOrderList) {
-                        mLiteOrderList = liteOrderList;
+                    public void onPostExecute(LitePaymentList paymentList) {
+                        mPaymentList = paymentList;
                         // set order list
-                        OrderFragment.this.mAdapter.updateOrder(liteOrderList);
+                        PaymentFragment.this.mAdapter.updateOrder(paymentList);
                         if (isSwipe) {
                             mSwipeRefreshLayout.setRefreshing(false);
                         }
@@ -219,19 +220,19 @@ public class OrderFragment extends Fragment {
                     }
                 }, app);
                 break;
-            case SUBMITTED:
-                OrderService.getSubmittedLiteOrderList(app.getStoreId(), new UICallBack<LiteOrderList>() {
+            case PAID:
+                PaymentService.getPaidList(app.getStoreId(), new UICallBack<LitePaymentList>() {
                     @Override
                     public void onPreExecute() {
                     }
 
                     @Override
-                    public void onPostExecute(LiteOrderList liteOrderList) {
+                    public void onPostExecute(LitePaymentList paymentList) {
                         // refresh time stamp
-                        mLiteOrderList = liteOrderList;
+                        mPaymentList = paymentList;
 
                         // set order list
-                        OrderFragment.this.mAdapter.updateOrder(liteOrderList);
+                        PaymentFragment.this.mAdapter.updateOrder(paymentList);
                         if (isSwipe) {
                             mSwipeRefreshLayout.setRefreshing(false);
                         }
@@ -239,17 +240,17 @@ public class OrderFragment extends Fragment {
                     }
                 }, app);
                 break;
-            case INPROCESS:
-                OrderService.getIPLiteOrderList(app.getStoreId(), new UICallBack<LiteOrderList>() {
+            case UNPAID:
+                PaymentService.getUnPaidList(app.getStoreId(), new UICallBack<LitePaymentList>() {
                     @Override
                     public void onPreExecute() {
                     }
 
                     @Override
-                    public void onPostExecute(LiteOrderList liteOrderList) {
-                        mLiteOrderList = liteOrderList;
+                    public void onPostExecute(LitePaymentList paymentList) {
+                        mPaymentList = paymentList;
                         // set order list
-                        OrderFragment.this.mAdapter.updateOrder(liteOrderList);
+                        PaymentFragment.this.mAdapter.updateOrder(paymentList);
                         if (isSwipe) {
                             mSwipeRefreshLayout.setRefreshing(false);
                         }
@@ -285,7 +286,7 @@ public class OrderFragment extends Fragment {
     }
 
     class RecyclerViewAdapter extends RecyclerView.Adapter {
-        private List<LiteOrder> orders = new ArrayList<>();
+        private List<LitePayment> payments = new ArrayList<>();
         private Drawable submit_bg;
         private Drawable accept_bg;
         private Drawable ip_bg;
@@ -296,30 +297,32 @@ public class OrderFragment extends Fragment {
             View card;
             LinearLayout orderStatusSection;
             TextView customerName;
-            TextView orderType;
-            TextView orderId;
+            TextView billId;
             TextView table;
             TextView time;
             TextView status;
             CircleImageView img;
+            TextView total;
+            TextView tip;
 
             public OrderViewHolder(View v) {
                 super(v);
                 card = v;
-                orderStatusSection = (LinearLayout) v.findViewById(R.id.order_status_section);
-                customerName = (TextView) v.findViewById(R.id.order_customer_name);
-                orderType = (TextView) v.findViewById(R.id.order_order_type);
-                orderId = (TextView) v.findViewById(R.id.order_id);
-                table = (TextView) v.findViewById(R.id.order_table);
-                time = (TextView) v.findViewById(R.id.order_time);
-                status = (TextView) v.findViewById(R.id.order_status);
-                img = (CircleImageView) v.findViewById(R.id.order_user_img);
+                orderStatusSection = (LinearLayout) v.findViewById(R.id.pay_status_section);
+                customerName = (TextView) v.findViewById(R.id.pay_customer_name);
+                billId = (TextView) v.findViewById(R.id.pay_id);
+                table = (TextView) v.findViewById(R.id.pay_table);
+                time = (TextView) v.findViewById(R.id.pay_time);
+                status = (TextView) v.findViewById(R.id.pay_status);
+                img = (CircleImageView) v.findViewById(R.id.pay_user_img);
+                total = (TextView) v.findViewById(R.id.pay_total);
+                tip = (TextView) v.findViewById(R.id.pay_tip);
             }
         }
 
-        RecyclerViewAdapter(LiteOrderList liteOrderList) {
-            if(liteOrderList != null && !Utils.isEmpty(liteOrderList.getOrders())) {
-                orders.addAll(liteOrderList.getOrders());
+        RecyclerViewAdapter(LitePaymentList litePaymentList) {
+            if(litePaymentList != null && !Utils.isEmpty(litePaymentList.getPayments())) {
+                payments.addAll(litePaymentList.getPayments());
             }
             Resources res = getResources();
             submit_bg = res.getDrawable(R.drawable.state_new_background_480);
@@ -329,10 +332,10 @@ public class OrderFragment extends Fragment {
             currentTimeStamp = System.currentTimeMillis();
         }
 
-        void updateOrder(LiteOrderList listOrderList) {
-            orders.clear();
-            if (listOrderList != null && !Utils.isEmpty(listOrderList.getOrders())) {
-                orders.addAll(listOrderList.getOrders());
+        void updateOrder(LitePaymentList litePaymentList) {
+            payments.clear();
+            if (litePaymentList != null && !Utils.isEmpty(litePaymentList.getPayments())) {
+                payments.addAll(litePaymentList.getPayments());
             }
             currentTimeStamp = System.currentTimeMillis();
             this.notifyDataSetChanged();
@@ -340,15 +343,15 @@ public class OrderFragment extends Fragment {
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.order_card, parent, false);
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.pay_card, parent, false);
             OrderViewHolder vh = new OrderViewHolder(v);
             return vh;
         }
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            final LiteOrder order = orders.get(position);
-            Customer customer = order.getCustomer();
+            final LitePayment pay = payments.get(position);
+            Customer customer = pay.getCustomer();
 
             OrderViewHolder viewHolder = (OrderViewHolder) holder;
             if (customer != null) {
@@ -362,27 +365,24 @@ public class OrderFragment extends Fragment {
                 viewHolder.customerName.setText("Anonymous");
                 viewHolder.img.setImageResource(monkey);
             }
-            viewHolder.orderType.setText(order.getOrderType());
-
             Drawable statusBg = null;
-            if (order.getStatus().equals(Constants.SUB_ORDER_SUBMITTED)) {
+            if (pay.getStatus().equals(Constants.ORDER_UNPAID)) {
                 statusBg = submit_bg;
-            } else if (order.getStatus().equals(Constants.SUB_ORDER_IN_PROCESS)) {
+            } else if (pay.getStatus().equals(Constants.ORDER_PAID)) {
                 statusBg = ip_bg;
-            } else if (order.getStatus().equals(Constants.SUB_ORDER_ACCEPTED)) {
-                statusBg = accept_bg;
             }
             if (statusBg != null) {
                 viewHolder.orderStatusSection.setBackground(statusBg);
             }
 
-            viewHolder.orderId.setText(order.getOrderId() + "/" + order.getSubId());
-            viewHolder.table.setText(order.getTable());
-
+            viewHolder.billId.setText(pay.getBillId());
+            viewHolder.table.setText(pay.getTable());
+            viewHolder.total.setText("$"+pay.getTotalAmount());
+            viewHolder.tip.setText("$"+pay.getTip());
 
             String waitingTimeString;
             try {
-                Date date = Utils.converterISO8601StringToDate(order.getCreatedTime());
+                Date date = Utils.converterISO8601StringToDate(pay.getCreatedTime());
                 long millis = currentTimeStamp - date.getTime();
                 waitingTimeString = Utils.formatMillis(millis);
             } catch (ParseException e) {
@@ -390,14 +390,14 @@ public class OrderFragment extends Fragment {
             }
 
             viewHolder.time.setText(waitingTimeString);
-            viewHolder.status.setText(order.getStatus());
+            viewHolder.status.setText(pay.getStatus());
 
             viewHolder.card.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(orderClickable) {
-                        orderClickable = false;
-                        loadOrderDetails(order.getOrderId(), order.getSubId());
+                    if(cardClickable) {
+                        cardClickable = false;
+                        loadPaymentDetails(pay.getBillId());
                     }
                 }
             });
@@ -405,23 +405,23 @@ public class OrderFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return orders.size();
+            return payments.size();
         }
     }
 
-    private void setOrderBtnColor() {
-        ((GradientDrawable) mOrderAllBtn.getBackground()).setColor(mUnSelectBtnColor);
-        ((GradientDrawable) mOrderIPBtn.getBackground()).setColor(mUnSelectBtnColor);
-        ((GradientDrawable) mOrderSubmittedBtn.getBackground()).setColor(mUnSelectBtnColor);
-        switch (mOrderMode) {
+    private void setPayBtnColor() {
+        ((GradientDrawable) mAllBtn.getBackground()).setColor(mUnSelectBtnColor);
+        ((GradientDrawable) mUnPaidBtn.getBackground()).setColor(mUnSelectBtnColor);
+        ((GradientDrawable) mPaidBtn.getBackground()).setColor(mUnSelectBtnColor);
+        switch (mPayMode) {
             case ALL:
-                ((GradientDrawable) mOrderAllBtn.getBackground()).setColor(mSelectedBtnColor);
+                ((GradientDrawable) mAllBtn.getBackground()).setColor(mSelectedBtnColor);
                 break;
-            case SUBMITTED:
-                ((GradientDrawable) mOrderSubmittedBtn.getBackground()).setColor(mSelectedBtnColor);
+            case PAID:
+                ((GradientDrawable) mPaidBtn.getBackground()).setColor(mSelectedBtnColor);
                 break;
-            case INPROCESS:
-                ((GradientDrawable) mOrderIPBtn.getBackground()).setColor(mSelectedBtnColor);
+            case UNPAID:
+                ((GradientDrawable) mUnPaidBtn.getBackground()).setColor(mSelectedBtnColor);
                 break;
         }
     }
@@ -433,31 +433,29 @@ public class OrderFragment extends Fragment {
     }
 
 
-    private void loadOrderDetails(final String orderId, final String subOrderId) {
-        OrderService.lockOrder(orderId, subOrderId, app.getUser().getUserId(), new UICallBack<Order>() {
+    private void loadPaymentDetails(final String paymentId) {
+        PaymentService.getPayment(paymentId, new UICallBack<Payment>() {
             @Override
             public void onPreExecute() {
-                notifyActivity(Constants.SHOW_LOADING);
+                //notifyActivity(Constants.SHOW_LOADING);
             }
 
             @Override
-            public void onPostExecute(Order order) {
-                if (order != null) {
+            public void onPostExecute(Payment payment) {
+                /*
                     notifyActivity(Constants.HIDE_LOADING);
                     startOrderDetailsActivity(order);
-                } else {
-                    Toast.makeText(getActivity().getApplicationContext(), "Cannot lock this order",
-                        Toast.LENGTH_SHORT).show();
-                }
-                orderClickable = true;
+                    cardClickable = true;
+                    */
             }
         }, app);
     }
 
+
     class SwipeRefreshListener implements SwipeRefreshLayout.OnRefreshListener {
         @Override
         public void onRefresh() {
-            refreshOrderList(true);
+            refreshPaymentList(true);
         }
     }
 }
