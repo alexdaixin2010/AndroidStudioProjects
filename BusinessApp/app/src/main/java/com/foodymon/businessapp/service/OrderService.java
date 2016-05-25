@@ -120,7 +120,7 @@ public class OrderService {
         }).execute(null);
     }
 
-    public static void rejectOrder(final String orderId, final String subId, final String userId, final UICallBack<Boolean> callBack, final BusinessApplication app) {
+    public static void cancelOrder(final String orderId, final String subId, final String userId, final UICallBack<Boolean> callBack, final BusinessApplication app) {
 
         new TaskRunner<String, Boolean>(new Task<String, Boolean>() {
             @Override
@@ -133,7 +133,32 @@ public class OrderService {
             public Boolean doInBackground(String[] params) {
                 HashMap<String, String> paramMap = new HashMap<>();
                 paramMap.put("operator", userId);
-                Boolean response = HttpUtils.post("/bp/" + orderId + "/reject/"+subId, paramMap, null, null, new byte[0],Boolean.class, app);
+                Boolean response = HttpUtils.post("/bp/" + orderId + "/cancel/"+subId, paramMap, null, null, new byte[0],Boolean.class, app);
+                return response;
+            }
+
+            @Override
+            public void onPostExecute(Boolean response) {
+                callBack.onPostExecute(response);
+
+            }
+        }).execute(null);
+    }
+
+    public static void returnOrder(final String orderId, final String subId, final String userId, final UICallBack<Boolean> callBack, final BusinessApplication app) {
+
+        new TaskRunner<String, Boolean>(new Task<String, Boolean>() {
+            @Override
+            public void onPreExecute() {
+                callBack.onPreExecute();
+            }
+
+            @Override
+            @Nullable
+            public Boolean doInBackground(String[] params) {
+                HashMap<String, String> paramMap = new HashMap<>();
+                paramMap.put("operator", userId);
+                Boolean response = HttpUtils.post("/bp/" + orderId + "/return/"+subId, paramMap, null, null, new byte[0],Boolean.class, app);
                 return response;
             }
 

@@ -36,7 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class OrderDetailsActivity extends AppCompatActivity {
+public class OrderDetailActivity extends AppCompatActivity {
 
     private Order order;
     private ProgressBar loadding;
@@ -266,7 +266,7 @@ public class OrderDetailsActivity extends AppCompatActivity {
                 if (response != null && response == Boolean.TRUE) {
                     finishActivity(true);
                 } else {
-                    Toast.makeText(OrderDetailsActivity.this.getApplicationContext(), "Cannot unlock this order",
+                    Toast.makeText(OrderDetailActivity.this.getApplicationContext(), "Cannot unlock this order",
                         Toast.LENGTH_SHORT).show();
                 }
             }
@@ -294,7 +294,7 @@ public class OrderDetailsActivity extends AppCompatActivity {
     }
 
     private void rejectOrder(String orderId, String subOrderId) {
-        OrderService.rejectOrder(orderId, subOrderId, app.getUser().getUserId(), new UICallBack<Boolean>() {
+        OrderService.cancelOrder(orderId, subOrderId, app.getUser().getUserId(), new UICallBack<Boolean>() {
             @Override
             public void onPreExecute() {
 

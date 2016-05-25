@@ -156,8 +156,9 @@ public class OrderFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (mLiteOrderList == null ) {
-            mLiteOrderList = getActivity().getIntent()
-                .getParcelableExtra(LiteOrderList.BUNDLE_NAME);
+            Bundle bundle = getActivity().getIntent().getExtras();
+            mLiteOrderList = bundle.getParcelable(LiteOrderList.BUNDLE_NAME);
+            bundle.remove(LiteOrderList.BUNDLE_NAME);
         }
         mAdapter = new RecyclerViewAdapter(mLiteOrderList);
         mRecyclerView.setAdapter(mAdapter);
@@ -427,7 +428,7 @@ public class OrderFragment extends Fragment {
     }
 
     private void startOrderDetailsActivity(Order order) {
-        Intent intent = new Intent(getActivity(), OrderDetailsActivity.class);
+        Intent intent = new Intent(getActivity(), OrderDetailActivity.class);
         intent.putExtra(Order.BUNDLE_NAME, order);
         getActivity().startActivityForResult(intent, Constants.ORDER_DETAIL_REQUEST);
     }

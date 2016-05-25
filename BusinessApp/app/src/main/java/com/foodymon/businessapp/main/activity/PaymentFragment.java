@@ -426,7 +426,7 @@ public class PaymentFragment extends Fragment  {
     }
 
     private void startOrderDetailsActivity(Order order) {
-        Intent intent = new Intent(getActivity(), OrderDetailsActivity.class);
+        Intent intent = new Intent(getActivity(), OrderDetailActivity.class);
         intent.putExtra(Order.BUNDLE_NAME, order);
         getActivity().startActivityForResult(intent, Constants.ORDER_DETAIL_REQUEST);
     }

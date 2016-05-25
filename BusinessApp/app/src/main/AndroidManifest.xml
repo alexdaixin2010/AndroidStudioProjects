@@ -32,7 +32,7 @@
             android:launchMode="singleTask" >
         </activity>
         <activity
-            android:name=".main.activity.OrderDetailsActivity" >
+            android:name=".main.activity.OrderDetailActivity" >
         </activity>
 
 
